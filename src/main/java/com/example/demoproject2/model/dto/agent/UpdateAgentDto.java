@@ -1,13 +1,12 @@
 package com.example.demoproject2.model.dto.agent;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
-import static com.example.demoproject2.consts.Validation.*;
+import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MESSAGE;
+import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_VOEN_MESSAGE;
 
 @Getter
 @Setter
@@ -16,24 +15,19 @@ import static com.example.demoproject2.consts.Validation.*;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class CreateAgentDto {
-    @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
+public class UpdateAgentDto {
     String fullName;
-    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer city;
-    @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String address;
-    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer agentCode;
     String idNumber;
     @Length(min = 10, max = 10, message = DEFAULT_VALID_VOEN_MESSAGE)
-    @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String voen;
     String phone;
-    @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String mobile;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String email;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String salesRepEmail;
+    Short status;
 }
