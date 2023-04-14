@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.validator.constraints.Length;
 
-import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
-import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MESSAGE;
+import static com.example.demoproject2.consts.Validation.*;
 
 @Getter
 @Setter
@@ -15,6 +15,7 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MES
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@ToString
 public class CreateAgentDto {
     @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String fullName;
@@ -25,6 +26,7 @@ public class CreateAgentDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer agentCode;
     String idNumber;
+    @Length(min = 10, max = 10, message = DEFAULT_VALID_VOEN_MESSAGE)
     @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String voen;
     String phone;
@@ -33,5 +35,5 @@ public class CreateAgentDto {
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String email;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
-    String alertsEmail;
+    String salesRepEmail;
 }

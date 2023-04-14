@@ -15,7 +15,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AgentRespDto {
     String fullName;
-    Integer cityId;
+    Integer cityİd;
     String address;
     Integer agentCode;
     String idNumber;
