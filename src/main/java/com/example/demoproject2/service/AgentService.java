@@ -1,11 +1,13 @@
 package com.example.demoproject2.service;
 
-import com.example.demoproject2.model.dto.agent.AgentRespDto;
+import com.example.demoproject2.model.dto.agent.AgentDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
 
 public interface AgentService {
-    AgentRespDto createAgent(CreateAgentDto createAgentDto);
+    AgentDto createAgent(CreateAgentDto createAgentDto);
 
-    AgentRespDto updateAgent(UpdateAgentDto updateAgentDto);
+    AgentDto updateAgent(UpdateAgentDto updateAgentDto);
+
+    void deleteAgentById(Integer agentId);
 }

@@ -1,12 +1,12 @@
 package com.example.demoproject2.model.dto.agent;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
-import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MESSAGE;
-import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_VOEN_MESSAGE;
+import static com.example.demoproject2.consts.Validation.*;
 
 @Getter
 @Setter
@@ -16,6 +16,8 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_VOEN_MESS
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 public class UpdateAgentDto {
+    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
+    Integer id;
     String fullName;
     Integer city;
     String address;
@@ -30,4 +32,12 @@ public class UpdateAgentDto {
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String salesRepEmail;
     Short status;
+
+    public void setİd(Integer id) { //due to jooq locale problem: TODO
+        this.id = id;
+    }
+
+    public Integer getİd() {
+        return id;
+    }
 }

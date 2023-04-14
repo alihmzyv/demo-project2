@@ -30,4 +30,10 @@ public class AgentController {
         log.info(updateAgentDto.toString());
         return agentService.updateAgent(updateAgentDto);
     }
+
+    @DeleteMapping("/{agent-id}")
+    public void deleteAgent(@PathVariable("agent-id") Integer agentId) {
+        agentService.deleteAgentById(agentId);
+        log.info("Deleted agent id: {}", agentId);
+    }
 }

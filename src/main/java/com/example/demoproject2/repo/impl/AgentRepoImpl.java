@@ -12,7 +12,6 @@ import org.jooq.Record5;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.demoproject2.consts.Fields.*;
@@ -41,13 +40,14 @@ public class AgentRepoImpl implements AgentRepo {
                 .collect(Collectors.toMap(Field::getName, field -> field.getValue(agentRecord)));
         return dslContext.update(AGENT)
                 .set(nonNullFields)
+                .where(AGENT.ID.eq(agentRecord.getİd()))
                 .returning()
                 .fetchOne();
     }
 
     @Override
-    public Optional<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAgentById(Integer agentId) {
-        Record5<AgentRecord, Integer, Integer, Integer, Integer> agentRespRec = dslContext.select(
+    public Record5<AgentRecord, Integer, Integer, Integer, Integer> findAgentById(Integer agentId) {
+        return dslContext.select(
                         AGENT,
                         NUM_OF_CASHIERS,
                         NUM_OF_ACT_CASHIERS,
@@ -57,6 +57,12 @@ public class AgentRepoImpl implements AgentRepo {
                 .leftJoin(CASHIER).on(CASHIER.AGENT_ID.eq(agentId))
                 .groupBy(AGENT.ID)
                 .fetchAny();
-        return Optional.ofNullable(agentRespRec);
+    }
+
+    @Override
+    public int deleteAgentById(Integer agentId) {
+        return dslContext.delete(AGENT)
+                .where(AGENT.ID.eq(agentId))
+                .execute();
     }
 }
