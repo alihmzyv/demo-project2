@@ -1,6 +1,6 @@
 package com.example.demoproject2.controller;
 
-import com.example.demoproject2.model.dto.agent.AgentRespDto;
+import com.example.demoproject2.model.dto.agent.AgentFullRespDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
 import com.example.demoproject2.service.AgentService;
@@ -9,7 +9,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -19,20 +22,38 @@ import org.springframework.web.bind.annotation.*;
 public class AgentController {
     AgentService agentService;
 
+    @GetMapping
+    public List<AgentFullRespDto> getAllAgents(
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size) {
+        return agentService.findAllAgents(page, size);
+    }
+
+    @GetMapping("/{agent-id}")
+    public AgentFullRespDto getAgentById(
+            @PathVariable("agent-id") Integer agentId) {
+        return agentService.findAgentById(agentId);
+    }
+
     @PostMapping
-    public AgentRespDto createAgent(@RequestBody @Valid CreateAgentDto createAgentDto) {
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public AgentFullRespDto createAgent(
+            @RequestBody @Valid CreateAgentDto createAgentDto) {
         log.info(createAgentDto.toString());
         return agentService.createAgent(createAgentDto);
     }
 
     @PutMapping
-    public AgentRespDto updateAgent(@RequestBody @Valid UpdateAgentDto updateAgentDto) {
+    public AgentFullRespDto updateAgent(
+            @RequestBody @Valid UpdateAgentDto updateAgentDto) {
         log.info(updateAgentDto.toString());
         return agentService.updateAgent(updateAgentDto);
     }
 
     @DeleteMapping("/{agent-id}")
-    public void deleteAgent(@PathVariable("agent-id") Integer agentId) {
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteAgent(
+            @PathVariable("agent-id") Integer agentId) {
         agentService.deleteAgentById(agentId);
         log.info("Deleted agent id: {}", agentId);
     }

@@ -1,5 +1,6 @@
 package com.example.demoproject2.repo.impl;
 
+import com.example.demoproject2.generated.jooq.Keys;
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
 import com.example.demoproject2.repo.AgentRepo;
 import lombok.AccessLevel;
@@ -11,6 +12,7 @@ import org.jooq.Field;
 import org.jooq.Record5;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -64,5 +66,20 @@ public class AgentRepoImpl implements AgentRepo {
         return dslContext.delete(AGENT)
                 .where(AGENT.ID.eq(agentId))
                 .execute();
+    }
+
+    @Override
+    public List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Integer page, Integer size) {
+        return dslContext.select(
+                        AGENT,
+                        NUM_OF_CASHIERS,
+                        NUM_OF_ACT_CASHIERS,
+                        NUM_OF_INACT_CASHIERS,
+                        NUM_OF_DEL_CASHIERS)
+                .from(AGENT)
+                .leftJoin(CASHIER).onKey(Keys.CASHIER__CASHIER_AGENT_ID_FK)
+                .groupBy(AGENT.ID)
+                .fetchStream()
+                .collect(Collectors.toList());
     }
 }

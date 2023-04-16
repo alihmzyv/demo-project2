@@ -1,10 +1,9 @@
 package com.example.demoproject2.model.dto.agent;
 
-import com.example.demoproject2.model.dto.status.CountStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -13,7 +12,19 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AgentRespDto {
-    AgentDto agentDto;
-    Integer numberOfCashiers;
-    List<CountStatus> cashiersCountStatuses;
+    Integer agentId;
+    String fullName;
+    Integer city;
+    String address;
+    Integer agentCode;
+    String idNumber;
+    String voen;
+    String phone;
+    String mobile;
+    String email;
+    String salesRepEmail;
+    BigDecimal totalPermanentBalance;
+    BigDecimal debtCredit;
+    BigDecimal extraDebtCredit;
+    Short status;
 }

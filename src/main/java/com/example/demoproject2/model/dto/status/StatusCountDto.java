@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CountStatus {
+public class StatusCountDto {
     Short statusId;
     Integer count;
 }

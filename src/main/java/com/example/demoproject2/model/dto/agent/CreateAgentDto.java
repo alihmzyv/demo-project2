@@ -7,6 +7,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
+import java.math.BigDecimal;
+
 import static com.example.demoproject2.consts.Validation.*;
 
 @Getter
@@ -20,7 +22,7 @@ public class CreateAgentDto {
     @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String fullName;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
-    Integer city;
+    Integer cityId;
     @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String address;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
@@ -32,8 +34,12 @@ public class CreateAgentDto {
     String phone;
     @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String mobile;
+    Short status;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String email;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String salesRepEmail;
+    BigDecimal totalPermanentBalance;
+    BigDecimal debtCredit;
+    BigDecimal extraDebtCredit;
 }

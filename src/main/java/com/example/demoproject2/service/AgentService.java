@@ -1,13 +1,17 @@
 package com.example.demoproject2.service;
 
-import com.example.demoproject2.model.dto.agent.AgentDto;
+import com.example.demoproject2.model.dto.agent.AgentFullRespDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
 
-public interface AgentService {
-    AgentDto createAgent(CreateAgentDto createAgentDto);
+import java.util.List;
 
-    AgentDto updateAgent(UpdateAgentDto updateAgentDto);
+public interface AgentService {
+    List<AgentFullRespDto> findAllAgents(Integer page, Integer size);
+    AgentFullRespDto findAgentById(Integer agentId);
+    AgentFullRespDto createAgent(CreateAgentDto createAgentDto);
+
+    AgentFullRespDto updateAgent(UpdateAgentDto updateAgentDto);
 
     void deleteAgentById(Integer agentId);
 }
