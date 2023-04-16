@@ -32,8 +32,8 @@ public class CashierController {
     @GetMapping
     public List<CashierRespDto> getAllCashiersByAgentId(
             @PathVariable("agent-id") Integer agentId,
-            @RequestParam("page") Integer page,
-            @RequestParam("size") Integer size) {
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
         return cashierService.findAllCashiersByAgentId(agentId, page, size);
     }
 

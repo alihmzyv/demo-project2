@@ -1,20 +1,26 @@
 package com.example.demoproject2.repo.impl;
 
+import com.example.demoproject2.generated.jooq.Keys;
 import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierSportsStakeLimitsRecord;
 import com.example.demoproject2.repo.CashierRepo;
+import com.example.demoproject2.util.PageUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.Record2;
-import org.jooq.UpdatableRecord;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.example.demoproject2.generated.jooq.Tables.*;
+import static com.example.demoproject2.consts.Conditions.CASHIER_IS_DELETED;
+import static com.example.demoproject2.generated.jooq.Tables.CASHIER;
+import static com.example.demoproject2.generated.jooq.Tables.CASHIER_SPORTS_STAKE_LIMITS;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -24,17 +30,18 @@ public class CashierRepoImpl implements CashierRepo {
 
     @Override
     public CashierRecord insertCashier(Integer agentId, CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> stakeLimitsRecords) {
+        final CashierRecord[] cashierRecordInserted = new CashierRecord[1];
         dslContext.transaction(ctx -> {
-            cashierRecord.setAgentİd(agentId);
-            CashierRecord cashierRecordInserted = Optional.ofNullable(dslContext.insertInto(CASHIER)
+            cashierRecord.setAgentId(agentId);
+            cashierRecordInserted[0] = Optional.ofNullable(ctx.dsl().insertInto(CASHIER)
                             .set(cashierRecord)
                             .returning()
                             .fetchOne())
                     .orElseThrow(() -> new RuntimeException("Something went wrong"));
-            stakeLimitsRecords.forEach(stakeLimitsRecord -> stakeLimitsRecord.setCashierİd(cashierRecordInserted.getİd()));
-            dslContext.batchInsert(stakeLimitsRecords).execute();
+            stakeLimitsRecords.forEach(stakeLimitsRecord -> stakeLimitsRecord.setCashierId(cashierRecordInserted[0].getId()));
+            ctx.dsl().batchInsert(stakeLimitsRecords).execute();
         });
-        return cashierRecord;
+        return cashierRecordInserted[0];
     }
 
     @Override
@@ -42,40 +49,52 @@ public class CashierRepoImpl implements CashierRepo {
         return dslContext.select(CASHIER, CASHIER_SPORTS_STAKE_LIMITS)
                 .from(CASHIER)
                 .leftJoin(CASHIER_SPORTS_STAKE_LIMITS)
-                .on(CASHIER_SPORTS_STAKE_LIMITS.CASHIER_ID.eq(cashierId))
-                .groupBy(CASHIER.ID)
+                .onKey(Keys.CASHIER_SPORTS_STAKE_LIMITS__CASHIER_SPORTS_STAKE_LIMITS_CASHIER_ID_FK)
+                .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierId)))
                 .fetchArray();
     }
 
     @Override
     public CashierRecord updateCashier(CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> cashierSportsStakeLimitsRecords) {
+        Map<String, Object> nonNullFields = cashierRecord.fieldStream()
+                .filter(field -> field.getValue(cashierRecord) != null)
+                .collect(Collectors.toMap(Field::getName, field -> field.getValue(cashierRecord)));
+        final CashierRecord[] cashierRecordUpdated = new CashierRecord[1];
         dslContext.transaction(ctx -> {
-            CashierRecord cashierRecordUpdated = Optional.ofNullable(ctx.dsl().update(CASHIER)
-                    .set(cashierRecord)
-                    .where(CASHIER.ID.eq(cashierRecord.getİd()))
+            cashierRecordUpdated[0] = Optional.ofNullable(ctx.dsl().update(CASHIER)
+                    .set(nonNullFields)
+                    .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierRecord.getId())))
                     .returning()
                     .fetchOne())
                     .orElseThrow(() -> new RuntimeException("Something went wrong"));
-            cashierSportsStakeLimitsRecords.forEach(stakeLimitsRecord -> stakeLimitsRecord.setCashierİd(cashierRecordUpdated.getİd()));
-            ctx.dsl().batchUpdate((UpdatableRecord<?>) cashierSportsStakeLimitsRecords)
-                    .execute();
+            ctx.dsl().batched(config -> cashierSportsStakeLimitsRecords
+                    .forEach(cashierSportsStakeLimitsRecord -> ctx.dsl().update(CASHIER_SPORTS_STAKE_LIMITS)
+                            .set(CASHIER_SPORTS_STAKE_LIMITS.SPORTS_ID, cashierSportsStakeLimitsRecord.getSportsId())
+                            .set(CASHIER_SPORTS_STAKE_LIMITS.MIN_STAKE, cashierSportsStakeLimitsRecord.getMinStake())
+                            .set(CASHIER_SPORTS_STAKE_LIMITS.MAX_STAKE, cashierSportsStakeLimitsRecord.getMaxStake())
+                            .where(CASHIER_SPORTS_STAKE_LIMITS.CASHIER_ID.eq(cashierRecord.getId()))
+                            .execute()));
         });
-        return cashierRecord;
+        return cashierRecordUpdated[0];
     }
 
     @Override
     public List<CashierRecord> findAllCashiersByAgentId(Integer agentId, Integer page, Integer size) {
+        int offset = PageUtil.findOffset(page, size);
         return dslContext.selectFrom(CASHIER)
-                .where(CASHIER.AGENT_ID.eq(agentId))
+                .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.AGENT_ID.eq(agentId)))
                 .groupBy(CASHIER.ID)
+                .offset(offset)
+                .limit(size)
                 .fetchStream()
                 .toList();
     }
 
     @Override
     public int deleteCashierById(Integer cashierId) {
-        return dslContext.deleteFrom(CASHIER)
-                .where(CASHIER.ID.eq(cashierId))
+        return dslContext.update(CASHIER)
+                .set(CASHIER.STATUS, (short) 3)
+                .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierId)))
                 .execute();
     }
 }

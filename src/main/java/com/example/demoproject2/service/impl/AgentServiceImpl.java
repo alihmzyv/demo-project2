@@ -43,8 +43,8 @@ public class AgentServiceImpl implements AgentService {
     public AgentFullRespDto createAgent(CreateAgentDto createAgentDto) {
         AgentRecord agentRecord = agentMapper.toRecord(createAgentDto);
         AgentRecord agentRecordInserted = agentRepo.insertAgent(agentRecord);
-        log.info("Id of agentRecord after insertion:{}", agentRecord.getİd());
-        Record5<AgentRecord, Integer, Integer, Integer, Integer> agentById = agentRepo.findAgentById(agentRecordInserted.getİd());
+        log.info("Id of agentRecord after insertion:{}", agentRecord.getId());
+        Record5<AgentRecord, Integer, Integer, Integer, Integer> agentById = agentRepo.findAgentById(agentRecordInserted.getId());
         return agentMapper.toDto(agentById);
     }
 
@@ -52,10 +52,10 @@ public class AgentServiceImpl implements AgentService {
     public AgentFullRespDto updateAgent(UpdateAgentDto updateAgentDto) {
         AgentRecord agentRecord = agentMapper.toRecord(updateAgentDto);
         return Optional.ofNullable(agentRepo.updateAgent(agentRecord))
-                .map(agentRecordUpdated -> agentRepo.findAgentById(agentRecordUpdated.getİd()))
+                .map(agentRecordUpdated -> agentRepo.findAgentById(agentRecordUpdated.getId()))
                 .map(agentMapper::toDto)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(String.format("Agent not found with id: %d", updateAgentDto.getAgentId())));
+                        new IllegalArgumentException(String.format("Agent not found with id: %d", updateAgentDto.getId())));
     }
 
     @Override

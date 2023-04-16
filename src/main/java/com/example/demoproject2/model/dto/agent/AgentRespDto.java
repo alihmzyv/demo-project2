@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AgentRespDto {
-    Integer agentId;
+    Integer id;
     String fullName;
     Integer city;
     String address;

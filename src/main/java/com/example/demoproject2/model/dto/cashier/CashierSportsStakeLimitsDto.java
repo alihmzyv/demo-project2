@@ -16,7 +16,7 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSA
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CashierSportsStakeLimitsDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
-    Short sportsType;
+    Short sportsId;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     BigDecimal minStake;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)

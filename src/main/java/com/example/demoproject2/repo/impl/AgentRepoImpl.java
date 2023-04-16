@@ -3,6 +3,7 @@ package com.example.demoproject2.repo.impl;
 import com.example.demoproject2.generated.jooq.Keys;
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
 import com.example.demoproject2.repo.AgentRepo;
+import com.example.demoproject2.util.PageUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.example.demoproject2.consts.Conditions.AGENT_IS_DELETED;
 import static com.example.demoproject2.consts.Fields.*;
 import static com.example.demoproject2.generated.jooq.Tables.AGENT;
 import static com.example.demoproject2.generated.jooq.Tables.CASHIER;
@@ -42,7 +44,7 @@ public class AgentRepoImpl implements AgentRepo {
                 .collect(Collectors.toMap(Field::getName, field -> field.getValue(agentRecord)));
         return dslContext.update(AGENT)
                 .set(nonNullFields)
-                .where(AGENT.ID.eq(agentRecord.getİd()))
+                .where(AGENT_IS_DELETED.isFalse().and(AGENT.ID.eq(agentRecord.getId())))
                 .returning()
                 .fetchOne();
     }
@@ -56,20 +58,23 @@ public class AgentRepoImpl implements AgentRepo {
                         NUM_OF_INACT_CASHIERS,
                         NUM_OF_DEL_CASHIERS)
                 .from(AGENT)
-                .leftJoin(CASHIER).on(CASHIER.AGENT_ID.eq(agentId))
+                .innerJoin(CASHIER).onKey(Keys.CASHIER__CASHIER_AGENT_ID_FK)
+                .where(AGENT_IS_DELETED.isFalse().and(AGENT.ID.eq(agentId)))
                 .groupBy(AGENT.ID)
                 .fetchAny();
     }
 
     @Override
     public int deleteAgentById(Integer agentId) {
-        return dslContext.delete(AGENT)
-                .where(AGENT.ID.eq(agentId))
+        return dslContext.update(AGENT)
+                .set(AGENT.STATUS, (short) 3)
+                .where(AGENT_IS_DELETED.isFalse().and(AGENT.ID.eq(agentId)))
                 .execute();
     }
 
     @Override
     public List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Integer page, Integer size) {
+        int offset = PageUtil.findOffset(page, size);
         return dslContext.select(
                         AGENT,
                         NUM_OF_CASHIERS,
@@ -78,7 +83,10 @@ public class AgentRepoImpl implements AgentRepo {
                         NUM_OF_DEL_CASHIERS)
                 .from(AGENT)
                 .leftJoin(CASHIER).onKey(Keys.CASHIER__CASHIER_AGENT_ID_FK)
+                .where(AGENT_IS_DELETED.isFalse())
                 .groupBy(AGENT.ID)
+                .offset(offset)
+                .limit(size)
                 .fetchStream()
                 .collect(Collectors.toList());
     }

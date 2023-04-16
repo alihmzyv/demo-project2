@@ -13,5 +13,5 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CashierFullRespDto {
     CashierRespDto cashierRespDto;
-    List<CashierSportsStakeLimitsDto> cashierSportsStakeLimits;
+    List<CashierSportsStakeLimitsDto> stakeLimits;
 }

@@ -18,7 +18,7 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSA
 @ToString
 public class UpdateCashierDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
-    Integer cashierId;
+    Integer id;
     Integer cashierCode;
     String provider;
     String fullName;
@@ -34,6 +34,8 @@ public class UpdateCashierDto {
     BigDecimal extraDebtCredit;
     BigDecimal debtCredit;
     BigDecimal betTicketPayoutLimit;
+    Short status;
+    Short frozenStatus;
     String email;
     String salesRepEmail;
     List<CashierSportsStakeLimitsDto> cashierSportsStakeLimits;

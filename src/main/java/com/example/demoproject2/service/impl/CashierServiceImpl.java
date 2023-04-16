@@ -12,6 +12,7 @@ import com.example.demoproject2.service.CashierService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record2;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class CashierServiceImpl implements CashierService {
     CashierRepo cashierRepo;
@@ -29,9 +31,10 @@ public class CashierServiceImpl implements CashierService {
     @Override
     public CashierFullRespDto createCashier(Integer agentId, CreateCashierDto createCashierDto) {
         CashierRecord cashierRecord = cashierMapper.toCashierRecord(agentId, createCashierDto);
-        List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierMapper.toStakeLimitsRecord(createCashierDto.getCashierSportsStakeLimitDtos());
+        List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierMapper.toStakeLimitsRecords(createCashierDto.getCashierSportsStakeLimitDtos());
         CashierRecord cashierRecordInserted = cashierRepo.insertCashier(agentId, cashierRecord, stakeLimitsRecords);
-        Record2<CashierRecord, CashierSportsStakeLimitsRecord>[] cashierById = cashierRepo.findCashierById(cashierRecordInserted.getİd());
+        log.info("Cashier inserted id: {}", cashierRecordInserted.getId());
+        Record2<CashierRecord, CashierSportsStakeLimitsRecord>[] cashierById = cashierRepo.findCashierById(cashierRecordInserted.getId());
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecordsInserted = Arrays.stream(cashierById)
                 .map(Record2::component2)
                 .toList();
@@ -41,9 +44,9 @@ public class CashierServiceImpl implements CashierService {
     @Override
     public CashierFullRespDto updateCashier(UpdateCashierDto updateCashierDto) {
         CashierRecord cashierRecord = cashierMapper.toCashierRecord(updateCashierDto);
-        List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierMapper.toStakeLimitsRecord(updateCashierDto.getCashierSportsStakeLimits());
+        List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierMapper.toStakeLimitsRecords(updateCashierDto.getCashierSportsStakeLimits());
         CashierRecord cashierRecordUpdated = cashierRepo.updateCashier(cashierRecord, stakeLimitsRecords);
-        Record2<CashierRecord, CashierSportsStakeLimitsRecord>[] cashierById = cashierRepo.findCashierById(cashierRecord.getİd());
+        Record2<CashierRecord, CashierSportsStakeLimitsRecord>[] cashierById = cashierRepo.findCashierById(cashierRecord.getId());
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecordsUpdated = Arrays.stream(cashierById)
                 .map(Record2::component2)
                 .toList();
@@ -53,6 +56,7 @@ public class CashierServiceImpl implements CashierService {
     @Override
     public CashierFullRespDto findCashierById(Integer cashierId) {
         Record2<CashierRecord, CashierSportsStakeLimitsRecord>[] cashierById = Optional.ofNullable(cashierRepo.findCashierById(cashierId))
+                .filter(record2s -> record2s.length != 0)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Cashier not found with id: %d", cashierId)));
         CashierRecord cashierRecord = cashierById[0].component1();
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecordsFetched = Arrays.stream(cashierById)

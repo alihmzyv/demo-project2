@@ -24,8 +24,8 @@ public class AgentController {
 
     @GetMapping
     public List<AgentFullRespDto> getAllAgents(
-            @RequestParam("page") Integer page,
-            @RequestParam("size") Integer size) {
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
         return agentService.findAllAgents(page, size);
     }
 
@@ -37,10 +37,10 @@ public class AgentController {
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public AgentFullRespDto createAgent(
+    public void createAgent(
             @RequestBody @Valid CreateAgentDto createAgentDto) {
         log.info(createAgentDto.toString());
-        return agentService.createAgent(createAgentDto);
+        agentService.createAgent(createAgentDto);
     }
 
     @PutMapping

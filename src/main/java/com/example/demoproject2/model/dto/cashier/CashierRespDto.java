@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CashierRespDto {
-    Integer cashierId;
+    Integer id;
     Integer agentId;
     Integer cashierCode;
     String providerId;

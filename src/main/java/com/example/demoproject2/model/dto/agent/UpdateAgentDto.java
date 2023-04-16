@@ -6,8 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
-import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MESSAGE;
-import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_VOEN_MESSAGE;
+import static com.example.demoproject2.consts.Validation.*;
 
 @Getter
 @Setter
@@ -17,8 +16,8 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_VOEN_MESS
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 public class UpdateAgentDto {
-    @NotNull
-    Integer agentId;
+    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
+    Integer id;
     Integer agentCode;
     String fullName;
     String idNumber;
