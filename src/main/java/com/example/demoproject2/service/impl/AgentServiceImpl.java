@@ -1,7 +1,7 @@
 package com.example.demoproject2.service.impl;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
-import com.example.demoproject2.model.dto.agent.AgentFullRespDto;
+import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
 import com.example.demoproject2.model.mapper.AgentMapper;
@@ -29,22 +29,22 @@ public class AgentServiceImpl implements AgentService {
     AgentRepo agentRepo;
 
     @Override
-    public Page<AgentFullRespDto> findAllAgents(Pageable pageable) {
+    public Page<AgentDetailedRespDto> findAllAgents(Pageable pageable) {
         PageImpl<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgentsPage = agentRepo.findAllAgents(pageable);
-        List<AgentFullRespDto> agentFullRespDtos = agentMapper.toAgentRespDto(allAgentsPage.getContent());
-        return new PageImpl<>(agentFullRespDtos, pageable, allAgentsPage.getTotalElements());
+        List<AgentDetailedRespDto> agentDetailedRespDtos = agentMapper.toAgentRespDto(allAgentsPage.getContent());
+        return new PageImpl<>(agentDetailedRespDtos, pageable, allAgentsPage.getTotalElements());
     }
 
     @Override
-    public AgentFullRespDto findAgentById(Integer agentId) {
+    public AgentDetailedRespDto findAgentById(Integer agentId) {
         Record5<AgentRecord, Integer, Integer, Integer, Integer> agentById = agentRepo.findAgentById(agentId);
-        AgentFullRespDto agentFullRespDto = agentMapper.toDto(agentById);
-        return Optional.ofNullable(agentFullRespDto)
+        AgentDetailedRespDto agentDetailedRespDto = agentMapper.toDto(agentById);
+        return Optional.ofNullable(agentDetailedRespDto)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Agent not found with id: %d", agentId)));
     }
 
     @Override
-    public AgentFullRespDto createAgent(CreateAgentDto createAgentDto) {
+    public AgentDetailedRespDto createAgent(CreateAgentDto createAgentDto) {
         AgentRecord agentRecord = agentMapper.toRecord(createAgentDto);
         AgentRecord agentRecordInserted = agentRepo.insertAgent(agentRecord);
         log.info("Id of agentRecord after insertion:{}", agentRecord.getId());
@@ -53,7 +53,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public AgentFullRespDto updateAgent(UpdateAgentDto updateAgentDto) {
+    public AgentDetailedRespDto updateAgent(UpdateAgentDto updateAgentDto) {
         AgentRecord agentRecord = agentMapper.toRecord(updateAgentDto);
         return Optional.ofNullable(agentRepo.updateAgent(agentRecord))
                 .map(agentRecordUpdated -> agentRepo.findAgentById(agentRecordUpdated.getId()))

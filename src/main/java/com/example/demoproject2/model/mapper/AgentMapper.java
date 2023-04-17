@@ -1,7 +1,7 @@
 package com.example.demoproject2.model.mapper;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
-import com.example.demoproject2.model.dto.agent.AgentFullRespDto;
+import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
 import com.example.demoproject2.model.dto.agent.AgentRespDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
@@ -19,7 +19,7 @@ public interface AgentMapper {
     AgentRecord toRecord(CreateAgentDto createAgentDto);
     AgentRecord toRecord(UpdateAgentDto updateAgentDto);
     AgentRespDto toDto(AgentRecord agentRecord);
-    default AgentFullRespDto toDto(Record5<AgentRecord, Integer, Integer, Integer, Integer> record) {
+    default AgentDetailedRespDto toDto(Record5<AgentRecord, Integer, Integer, Integer, Integer> record) {
         if (record == null) {
             return null;
         }
@@ -39,14 +39,14 @@ public interface AgentMapper {
                 .count(num_of_del_cashiers)
                 .build();
         List<StatusCountDto> cashiersStatus = List.of(actCashiers, inactCashiers, delCashiers);
-        return AgentFullRespDto.builder()
+        return AgentDetailedRespDto.builder()
                 .agentDto(toDto(record.component1()))
                 .numberOfCashiers(record.component2())
                 .cashiersStatusCountDtos(cashiersStatus)
                 .build();
     }
 
-    default List<AgentFullRespDto> toAgentRespDto(List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgents) {
+    default List<AgentDetailedRespDto> toAgentRespDto(List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgents) {
         return allAgents.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

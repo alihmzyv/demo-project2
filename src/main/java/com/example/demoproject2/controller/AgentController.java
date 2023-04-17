@@ -1,6 +1,6 @@
 package com.example.demoproject2.controller;
 
-import com.example.demoproject2.model.dto.agent.AgentFullRespDto;
+import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
 import com.example.demoproject2.service.AgentService;
@@ -24,13 +24,13 @@ public class AgentController {
     AgentService agentService;
 
     @GetMapping
-    public Page<AgentFullRespDto> getAllAgents(
+    public Page<AgentDetailedRespDto> getAllAgents(
             @ParameterObject Pageable pageable) {
         return agentService.findAllAgents(pageable);
     }
 
     @GetMapping("/{agent-id}")
-    public AgentFullRespDto getAgentById(
+    public AgentDetailedRespDto getAgentById(
             @PathVariable("agent-id") Integer agentId) {
         return agentService.findAgentById(agentId);
     }
@@ -44,7 +44,7 @@ public class AgentController {
     }
 
     @PutMapping
-    public AgentFullRespDto updateAgent(
+    public AgentDetailedRespDto updateAgent(
             @RequestBody @Valid UpdateAgentDto updateAgentDto) {
         log.info(updateAgentDto.toString());
         return agentService.updateAgent(updateAgentDto);
