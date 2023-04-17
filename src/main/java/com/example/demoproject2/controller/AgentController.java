@@ -1,5 +1,6 @@
 package com.example.demoproject2.controller;
 
+import com.example.demoproject2.model.dto.agent.AgentCashiersRespDto;
 import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
@@ -22,6 +25,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class AgentController {
     AgentService agentService;
+
+    @GetMapping("/2")
+    public List<AgentCashiersRespDto> getAllAgents2(
+            @ParameterObject Pageable pageable) {
+        return agentService.findAllAgents2(pageable);
+    }
 
     @GetMapping
     public Page<AgentDetailedRespDto> getAllAgents(

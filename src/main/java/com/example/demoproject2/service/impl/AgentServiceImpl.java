@@ -1,6 +1,8 @@
 package com.example.demoproject2.service.impl;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
+import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
+import com.example.demoproject2.model.dto.agent.AgentCashiersRespDto;
 import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
@@ -12,12 +14,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record5;
+import org.jooq.Result;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -30,9 +34,17 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public Page<AgentDetailedRespDto> findAllAgents(Pageable pageable) {
-        PageImpl<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgentsPage = agentRepo.findAllAgents(pageable);
-        List<AgentDetailedRespDto> agentDetailedRespDtos = agentMapper.toAgentRespDto(allAgentsPage.getContent());
+        Page<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgentsPage = agentRepo.findAllAgents(pageable);
+        List<AgentDetailedRespDto> agentDetailedRespDtos = agentMapper.toDto(allAgentsPage.getContent());
         return new PageImpl<>(agentDetailedRespDtos, pageable, allAgentsPage.getTotalElements());
+    }
+
+    @Override
+    public List<AgentCashiersRespDto> findAllAgents2(Pageable pageable) {
+        Map<AgentRecord, Result<CashierRecord>> allAgents = agentRepo.findAllAgents2(pageable);
+        return allAgents.entrySet().stream()
+                .map(agentMapper::toDto)
+                .toList();
     }
 
     @Override

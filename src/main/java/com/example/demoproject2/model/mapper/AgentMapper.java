@@ -1,25 +1,33 @@
 package com.example.demoproject2.model.mapper;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
-import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
-import com.example.demoproject2.model.dto.agent.AgentRespDto;
-import com.example.demoproject2.model.dto.agent.CreateAgentDto;
-import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
+import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
+import com.example.demoproject2.model.dto.agent.*;
+import com.example.demoproject2.model.dto.cashier.CashierRespDto;
 import com.example.demoproject2.model.dto.status.StatusCountDto;
 import org.jooq.Record5;
+import org.jooq.Result;
 import org.mapstruct.Mapper;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.mapstruct.ReportingPolicy.WARN;
 
+
 @Mapper(componentModel = "spring", unmappedSourcePolicy = WARN)
-public interface AgentMapper {
-    AgentRecord toRecord(CreateAgentDto createAgentDto);
-    AgentRecord toRecord(UpdateAgentDto updateAgentDto);
-    AgentRespDto toDto(AgentRecord agentRecord);
-    default AgentDetailedRespDto toDto(Record5<AgentRecord, Integer, Integer, Integer, Integer> record) {
+public abstract class AgentMapper {
+    private final CashierMapper cashierMapper;
+
+    protected AgentMapper() {
+        cashierMapper = new CashierMapperImpl();
+    }
+
+    public abstract AgentRecord toRecord(CreateAgentDto createAgentDto);
+    public abstract AgentRecord toRecord(UpdateAgentDto updateAgentDto);
+    public abstract AgentRespDto toDto(AgentRecord agentRecord);
+    public AgentDetailedRespDto toDto(Record5<AgentRecord, Integer, Integer, Integer, Integer> record) {
         if (record == null) {
             return null;
         }
@@ -46,9 +54,17 @@ public interface AgentMapper {
                 .build();
     }
 
-    default List<AgentDetailedRespDto> toAgentRespDto(List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgents) {
+    public List<AgentDetailedRespDto> toDto(List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgents) {
         return allAgents.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public AgentCashiersRespDto toDto(Map.Entry<AgentRecord, Result<CashierRecord>> entrySet) {
+        List<CashierRespDto> cashierRespDtos = cashierMapper.toDto(entrySet.getValue().stream().toList());
+        return AgentCashiersRespDto.builder()
+                .agentRespDto(toDto(entrySet.getKey()))
+                .cashiers(cashierRespDtos)
+                .build();
     }
 }

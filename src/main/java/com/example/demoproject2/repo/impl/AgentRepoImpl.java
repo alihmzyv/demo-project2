@@ -2,16 +2,15 @@ package com.example.demoproject2.repo.impl;
 
 import com.example.demoproject2.generated.jooq.Keys;
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
+import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.repo.AgentRepo;
 import com.example.demoproject2.util.PageUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record5;
-import org.jooq.SortField;
+import org.jooq.*;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -77,7 +76,7 @@ public class AgentRepoImpl implements AgentRepo {
     }
 
     @Override
-    public PageImpl<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Pageable pageable) {
+    public Page<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Pageable pageable) {
         Collection<SortField<?>> orderByFields = PageUtil.getOrderByFields(AGENT, pageable.getSort());
         List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> records = dslContext.select(
                         AGENT,
@@ -94,6 +93,20 @@ public class AgentRepoImpl implements AgentRepo {
                 .limit(pageable.getPageSize())
                 .fetchStream().toList();
         return new PageImpl<>(records, pageable, findCount());
+    }
+
+    @Override
+    public Map<AgentRecord, Result<CashierRecord>> findAllAgents2(Pageable pageable) {
+        Collection<SortField<?>> orderByFields = PageUtil.getOrderByFields(AGENT, pageable.getSort());
+        Map<AgentRecord, Result<CashierRecord>> map = dslContext.select()
+                .from(AGENT)
+                .leftJoin(CASHIER).on(CASHIER.AGENT_ID.eq(AGENT.ID))
+                .orderBy(orderByFields)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchGroups(AGENT, CASHIER);
+        log.info("Records: {}", map);
+        return map;
     }
 
     private long findCount() {

@@ -33,27 +33,27 @@ public class CashierServiceImpl implements CashierService {
 
     @Override
     public CashierFullRespDto createCashier(Integer agentId, CreateCashierDto createCashierDto) {
-        CashierRecord cashierRecord = cashierMapper.toCashierRecord(agentId, createCashierDto);
-        List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierMapper.toStakeLimitsRecords(createCashierDto.getCashierSportsStakeLimitDtos());
+        CashierRecord cashierRecord = cashierMapper.toRecord(agentId, createCashierDto);
+        List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierMapper.toRecord(createCashierDto.getCashierSportsStakeLimitDtos());
         CashierRecord cashierRecordInserted = cashierRepo.insertCashier(agentId, cashierRecord, stakeLimitsRecords);
         log.info("Cashier inserted id: {}", cashierRecordInserted.getId());
         Record2<CashierRecord, CashierSportsStakeLimitsRecord>[] cashierById = cashierRepo.findCashierById(cashierRecordInserted.getId());
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecordsInserted = Arrays.stream(cashierById)
                 .map(Record2::component2)
                 .toList();
-        return cashierMapper.toCashierDto(cashierRecordInserted, stakeLimitsRecordsInserted);
+        return cashierMapper.toDto(cashierRecordInserted, stakeLimitsRecordsInserted);
     }
 
     @Override
     public CashierFullRespDto updateCashier(UpdateCashierDto updateCashierDto) {
-        CashierRecord cashierRecord = cashierMapper.toCashierRecord(updateCashierDto);
-        List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierMapper.toStakeLimitsRecords(updateCashierDto.getCashierSportsStakeLimits());
+        CashierRecord cashierRecord = cashierMapper.toRecord(updateCashierDto);
+        List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierMapper.toRecord(updateCashierDto.getCashierSportsStakeLimits());
         CashierRecord cashierRecordUpdated = cashierRepo.updateCashier(cashierRecord, stakeLimitsRecords);
         Record2<CashierRecord, CashierSportsStakeLimitsRecord>[] cashierById = cashierRepo.findCashierById(cashierRecord.getId());
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecordsUpdated = Arrays.stream(cashierById)
                 .map(Record2::component2)
                 .toList();
-        return cashierMapper.toCashierDto(cashierRecordUpdated, stakeLimitsRecordsUpdated);
+        return cashierMapper.toDto(cashierRecordUpdated, stakeLimitsRecordsUpdated);
     }
 
     @Override
@@ -65,14 +65,14 @@ public class CashierServiceImpl implements CashierService {
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecordsFetched = Arrays.stream(cashierById)
                 .map(Record2::component2)
                 .toList();
-        return cashierMapper.toCashierDto(cashierRecord, stakeLimitsRecordsFetched);
+        return cashierMapper.toDto(cashierRecord, stakeLimitsRecordsFetched);
     }
 
     @Override
     public Page<CashierRespDto> findAllCashiersByAgentId(Integer agentId, Pageable pageable) {
         Page<CashierRecord> allCashiersByAgentIdPage = cashierRepo.findAllCashiersByAgentId(agentId, pageable);
         List<CashierRecord> content = allCashiersByAgentIdPage.getContent();
-        List<CashierRespDto> cashierRespDtos = cashierMapper.toCashierDtos(content);
+        List<CashierRespDto> cashierRespDtos = cashierMapper.toDto(content);
         return new PageImpl<>(cashierRespDtos, pageable, allCashiersByAgentIdPage.getTotalElements());
     }
 

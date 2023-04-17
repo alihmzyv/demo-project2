@@ -12,6 +12,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record2;
 import org.jooq.SortField;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -83,7 +84,7 @@ public class CashierRepoImpl implements CashierRepo {
     }
 
     @Override
-    public PageImpl<CashierRecord> findAllCashiersByAgentId(Integer agentId, Pageable pageable) {
+    public Page<CashierRecord> findAllCashiersByAgentId(Integer agentId, Pageable pageable) {
         Collection<SortField<?>> orderByFields = PageUtil.getOrderByFields(CASHIER, pageable.getSort());
         List<CashierRecord> cashierRecords = dslContext.selectFrom(CASHIER)
                 .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.AGENT_ID.eq(agentId)))

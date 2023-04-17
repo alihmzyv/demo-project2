@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mapstruct.ReportingPolicy.WARN;
@@ -18,17 +19,30 @@ import static org.mapstruct.ReportingPolicy.WARN;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public abstract class CashierMapper {
 
-    public abstract CashierSportsStakeLimitsRecord toStakeLimitsRecord(CashierSportsStakeLimitsDto cashierSportsStakeLimitsDto);
-    public abstract List<CashierSportsStakeLimitsRecord> toStakeLimitsRecords(List<CashierSportsStakeLimitsDto> stakeLimits);
+    public abstract CashierSportsStakeLimitsRecord toRecord(CashierSportsStakeLimitsDto cashierSportsStakeLimitsDto);
+    public abstract List<CashierSportsStakeLimitsRecord> toRecord(List<CashierSportsStakeLimitsDto> stakeLimits);
 
-    public abstract CashierSportsStakeLimitsDto toStakeLimitsDto(CashierSportsStakeLimitsRecord cashierSportsStakeLimitsDto);
+    public abstract CashierSportsStakeLimitsDto toDto(CashierSportsStakeLimitsRecord cashierSportsStakeLimitsDto);
+    public abstract CashierRespDto toDto(CashierRecord cashierRecord);
 
-    public abstract CashierRecord toCashierRecord(Integer agentId, CreateCashierDto createCashierDto);
+    public abstract CashierRecord toRecord(Integer agentId, CreateCashierDto createCashierDto);
 
-    public abstract CashierRecord toCashierRecord(UpdateCashierDto updateCashierDto);
+    public abstract CashierRecord toRecord(UpdateCashierDto updateCashierDto);
 
     @Mapping(target = "cashierRespDto", source = "cashierRecord")
-    public abstract CashierFullRespDto toCashierDto(CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> stakeLimits);
+    public abstract CashierFullRespDto toDto(CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> stakeLimits);
 
-    public abstract List<CashierRespDto> toCashierDtos(List<CashierRecord> allCashiersByAgentId);
+    public List<CashierRespDto> toDto(List<CashierRecord> allCashiersByAgentId) {
+        if ( allCashiersByAgentId == null ) {
+            return null;
+        }
+
+        List<CashierRespDto> list = new ArrayList<CashierRespDto>( allCashiersByAgentId.size() );
+        for ( CashierRecord cashierRecord : allCashiersByAgentId ) {
+            if (cashierRecord.getId() != null)
+            list.add( toDto( cashierRecord ) );
+        }
+
+        return list;
+    }
 }
