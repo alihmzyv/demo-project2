@@ -2,8 +2,8 @@ package com.example.demoproject2.repo;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
 import org.jooq.Record5;
-
-import java.util.List;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 public interface AgentRepo {
     AgentRecord insertAgent(AgentRecord agentRecord);
@@ -13,5 +13,5 @@ public interface AgentRepo {
 
     int deleteAgentById(Integer agentId);
 
-    List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Integer page, Integer size);
+    PageImpl<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Pageable pageable);
 }

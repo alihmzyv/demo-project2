@@ -10,10 +10,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -30,11 +31,10 @@ public class CashierController {
     }
 
     @GetMapping
-    public List<CashierRespDto> getAllCashiersByAgentId(
+    public Page<CashierRespDto> getAllCashiersByAgentId(
             @PathVariable("agent-id") Integer agentId,
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return cashierService.findAllCashiersByAgentId(agentId, page, size);
+            @ParameterObject Pageable pageable) {
+        return cashierService.findAllCashiersByAgentId(agentId, pageable);
     }
 
     @PostMapping

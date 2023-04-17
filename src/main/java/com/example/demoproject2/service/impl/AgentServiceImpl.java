@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record5;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,9 +29,10 @@ public class AgentServiceImpl implements AgentService {
     AgentRepo agentRepo;
 
     @Override
-    public List<AgentFullRespDto> findAllAgents(Integer page, Integer size) {
-        List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgents = agentRepo.findAllAgents(page, size);
-        return agentMapper.toAgentRespDto(allAgents);
+    public Page<AgentFullRespDto> findAllAgents(Pageable pageable) {
+        PageImpl<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgentsPage = agentRepo.findAllAgents(pageable);
+        List<AgentFullRespDto> agentFullRespDtos = agentMapper.toAgentRespDto(allAgentsPage.getContent());
+        return new PageImpl<>(agentFullRespDtos, pageable, allAgentsPage.getTotalElements());
     }
 
     @Override

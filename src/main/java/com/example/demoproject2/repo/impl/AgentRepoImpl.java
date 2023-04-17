@@ -11,8 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record5;
+import org.jooq.SortField;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,9 +77,9 @@ public class AgentRepoImpl implements AgentRepo {
     }
 
     @Override
-    public List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Integer page, Integer size) {
-        int offset = PageUtil.findOffset(page, size);
-        return dslContext.select(
+    public PageImpl<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Pageable pageable) {
+        Collection<SortField<?>> orderByFields = PageUtil.getOrderByFields(AGENT, pageable.getSort());
+        List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> records = dslContext.select(
                         AGENT,
                         NUM_OF_CASHIERS,
                         NUM_OF_ACT_CASHIERS,
@@ -85,9 +89,14 @@ public class AgentRepoImpl implements AgentRepo {
                 .leftJoin(CASHIER).onKey(Keys.CASHIER__CASHIER_AGENT_ID_FK)
                 .where(AGENT_IS_DELETED.isFalse())
                 .groupBy(AGENT.ID)
-                .offset(offset)
-                .limit(size)
-                .fetchStream()
-                .collect(Collectors.toList());
+                .orderBy(orderByFields)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchStream().toList();
+        return new PageImpl<>(records, pageable, findCount());
+    }
+
+    private long findCount() {
+        return dslContext.fetchCount(AGENT);
     }
 }

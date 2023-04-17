@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -66,9 +69,11 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
-    public List<CashierRespDto> findAllCashiersByAgentId(Integer agentId, Integer page, Integer size) {
-        List<CashierRecord> allCashiersByAgentId = cashierRepo.findAllCashiersByAgentId(agentId, page, size);
-        return cashierMapper.toCashierDtos(allCashiersByAgentId);
+    public Page<CashierRespDto> findAllCashiersByAgentId(Integer agentId, Pageable pageable) {
+        Page<CashierRecord> allCashiersByAgentIdPage = cashierRepo.findAllCashiersByAgentId(agentId, pageable);
+        List<CashierRecord> content = allCashiersByAgentIdPage.getContent();
+        List<CashierRespDto> cashierRespDtos = cashierMapper.toCashierDtos(content);
+        return new PageImpl<>(cashierRespDtos, pageable, allCashiersByAgentIdPage.getTotalElements());
     }
 
     @Override
