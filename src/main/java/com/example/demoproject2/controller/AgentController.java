@@ -1,6 +1,6 @@
 package com.example.demoproject2.controller;
 
-import com.example.demoproject2.model.dto.agent.AgentFullRespDto;
+import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
 import com.example.demoproject2.model.dto.agent.CreateAgentDto;
 import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
 import com.example.demoproject2.service.AgentService;
@@ -9,10 +9,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -23,14 +24,13 @@ public class AgentController {
     AgentService agentService;
 
     @GetMapping
-    public List<AgentFullRespDto> getAllAgents(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        return agentService.findAllAgents(page, size);
+    public Page<AgentDetailedRespDto> getAllAgents(
+            @ParameterObject Pageable pageable) {
+        return agentService.findAllAgents(pageable);
     }
 
     @GetMapping("/{agent-id}")
-    public AgentFullRespDto getAgentById(
+    public AgentDetailedRespDto getAgentById(
             @PathVariable("agent-id") Integer agentId) {
         return agentService.findAgentById(agentId);
     }
@@ -44,7 +44,7 @@ public class AgentController {
     }
 
     @PutMapping
-    public AgentFullRespDto updateAgent(
+    public AgentDetailedRespDto updateAgent(
             @RequestBody @Valid UpdateAgentDto updateAgentDto) {
         log.info(updateAgentDto.toString());
         return agentService.updateAgent(updateAgentDto);

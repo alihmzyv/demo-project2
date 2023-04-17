@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class AgentRespDto {
     Integer id;
     String fullName;
-    Integer city;
+    Integer cityId;
     String address;
     Integer agentCode;
     String idNumber;

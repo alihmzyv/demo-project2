@@ -11,8 +11,12 @@ import lombok.experimental.FieldDefaults;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record2;
+import org.jooq.SortField;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -79,15 +83,17 @@ public class CashierRepoImpl implements CashierRepo {
     }
 
     @Override
-    public List<CashierRecord> findAllCashiersByAgentId(Integer agentId, Integer page, Integer size) {
-        int offset = PageUtil.findOffset(page, size);
-        return dslContext.selectFrom(CASHIER)
+    public PageImpl<CashierRecord> findAllCashiersByAgentId(Integer agentId, Pageable pageable) {
+        Collection<SortField<?>> orderByFields = PageUtil.getOrderByFields(CASHIER, pageable.getSort());
+        List<CashierRecord> cashierRecords = dslContext.selectFrom(CASHIER)
                 .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.AGENT_ID.eq(agentId)))
                 .groupBy(CASHIER.ID)
-                .offset(offset)
-                .limit(size)
+                .orderBy(orderByFields)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchStream()
                 .toList();
+        return new PageImpl<>(cashierRecords, pageable, findCount());
     }
 
     @Override
@@ -96,5 +102,9 @@ public class CashierRepoImpl implements CashierRepo {
                 .set(CASHIER.STATUS, (short) 3)
                 .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierId)))
                 .execute();
+    }
+
+    private long findCount() {
+        return dslContext.fetchCount(CASHIER);
     }
 }
