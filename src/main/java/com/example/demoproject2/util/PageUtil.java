@@ -15,9 +15,6 @@ import java.util.Collection;
 
 @Slf4j
 public class PageUtil {
-    public static int findOffset(Integer page, Integer pageSize) {
-        return pageSize * page;
-    }
 
     private static <R extends TableRecord<R>> TableField<R, ?> getTableField(Table<R> table, String sortFieldName) {
         TableField<R, ?> sortField;

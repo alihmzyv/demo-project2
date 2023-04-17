@@ -62,7 +62,7 @@ public class AgentRepoImpl implements AgentRepo {
                         NUM_OF_INACT_CASHIERS,
                         NUM_OF_DEL_CASHIERS)
                 .from(AGENT)
-                .innerJoin(CASHIER).onKey(Keys.CASHIER__CASHIER_AGENT_ID_FK)
+                .leftJoin(CASHIER).onKey(Keys.CASHIER__CASHIER_AGENT_ID_FK)
                 .where(AGENT_IS_DELETED.isFalse().and(AGENT.ID.eq(agentId)))
                 .groupBy(AGENT.ID)
                 .fetchAny();
