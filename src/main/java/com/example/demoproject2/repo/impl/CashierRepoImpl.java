@@ -3,6 +3,7 @@ package com.example.demoproject2.repo.impl;
 import com.example.demoproject2.generated.jooq.Keys;
 import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierSportsStakeLimitsRecord;
+import com.example.demoproject2.repo.AgentRepo;
 import com.example.demoproject2.repo.CashierRepo;
 import com.example.demoproject2.util.PageUtil;
 import lombok.AccessLevel;
@@ -32,6 +33,7 @@ import static com.example.demoproject2.generated.jooq.Tables.CASHIER_SPORTS_STAK
 @Repository
 public class CashierRepoImpl implements CashierRepo {
     DSLContext dslContext;
+    AgentRepo agentRepo;
 
     @Override
     public CashierRecord insertCashier(Integer agentId, CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> stakeLimitsRecords) {
@@ -103,6 +105,33 @@ public class CashierRepoImpl implements CashierRepo {
                 .set(CASHIER.STATUS, (short) 3)
                 .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierId)))
                 .execute();
+    }
+
+    @Override
+    public int deactivateCashierById(Integer cashierId) {
+        int numOfCashiersDeactivated =  dslContext.update(CASHIER)
+                .set(CASHIER.STATUS, (short) 2)
+                .where(CASHIER.ID.eq(cashierId).and(CASHIER.STATUS.eq((short) 1)))
+                .execute();
+        if (numOfCashiersDeactivated != 0) {
+            Integer agentId = dslContext.select(CASHIER.AGENT_ID)
+                    .from(CASHIER)
+                    .where(CASHIER.ID.eq(cashierId))
+                    .fetchOne()
+                    .getValue(CASHIER.AGENT_ID, Integer.class);
+            int numOfActiveCashiersByAgentId = dslContext
+                    .fetchCount(CASHIER,
+                            CASHIER.AGENT_ID.eq(agentId).and(CASHIER.STATUS.eq((short) 1)));
+            if (numOfActiveCashiersByAgentId == 0) {
+                agentRepo.deactivateAgentById(agentId);
+            }
+        }
+        return numOfCashiersDeactivated;
+    }
+
+    @Override
+    public boolean cashierExistsById(Integer cashierId) {
+        return dslContext.fetchCount(CASHIER, CASHIER.ID.eq(cashierId)) != 0;
     }
 
     private long findCount() {

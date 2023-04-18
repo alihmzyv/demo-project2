@@ -17,4 +17,8 @@ public interface CashierRepo {
     Page<CashierRecord> findAllCashiersByAgentId(Integer agentId, Pageable pageable);
 
     int deleteCashierById(Integer cashierId);
+
+    int deactivateCashierById(Integer cashierId);
+
+    boolean cashierExistsById(Integer cashierId);
 }

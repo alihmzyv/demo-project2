@@ -81,4 +81,17 @@ public class CashierServiceImpl implements CashierService {
         int deletedRows = cashierRepo.deleteCashierById(cashierId);
         if (deletedRows == 0) throw new IllegalArgumentException(String.format("Cashier not found with id: %d", cashierId));
     }
+
+    @Override
+    public void deactivateCashierById(Integer cashierId) {
+        if (!cashierRepo.cashierExistsById(cashierId)) {
+            throw new IllegalArgumentException(String.format(
+                    "Cashier not found with id: %d", cashierId));
+        }
+        int numOfCashiersDeactivated = cashierRepo.deactivateCashierById(cashierId);
+        if (numOfCashiersDeactivated == 0) {
+            throw new IllegalArgumentException(String.format(
+                    "Cashier was already inactive with id: %d", cashierId));
+        }
+    }
 }

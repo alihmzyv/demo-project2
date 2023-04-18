@@ -18,4 +18,6 @@ public interface AgentService {
     AgentDetailedRespDto updateAgent(UpdateAgentDto updateAgentDto);
 
     void deleteAgentById(Integer agentId);
+
+    void deactivateAgentById(Integer agentId);
 }

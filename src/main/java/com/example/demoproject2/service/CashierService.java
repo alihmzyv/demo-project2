@@ -17,4 +17,6 @@ public interface CashierService {
     Page<CashierRespDto> findAllCashiersByAgentId(Integer agentId, Pageable pageable);
 
     void deleteCashierById(Integer cashierId);
+
+    void deactivateCashierById(Integer cashierId);
 }

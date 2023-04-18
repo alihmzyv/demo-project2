@@ -96,17 +96,37 @@ public class AgentRepoImpl implements AgentRepo {
     }
 
     @Override
-    public Map<AgentRecord, Result<CashierRecord>> findAllAgents2(Pageable pageable) {
+    public Result<Record2<AgentRecord, CashierRecord>> findAllAgents2(Pageable pageable) {
         Collection<SortField<?>> orderByFields = PageUtil.getOrderByFields(AGENT, pageable.getSort());
-        Map<AgentRecord, Result<CashierRecord>> map = dslContext.select()
+        Result<Record2<AgentRecord, CashierRecord>> map = dslContext.select(AGENT, CASHIER)
                 .from(AGENT)
                 .leftJoin(CASHIER).on(CASHIER.AGENT_ID.eq(AGENT.ID))
                 .orderBy(orderByFields)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchGroups(AGENT, CASHIER);
+                .fetch();
         log.info("Records: {}", map);
         return map;
+    }
+
+    @Override
+    public int deactivateAgentById(Integer agentId) {
+        int numOfAgentsDeactivated = dslContext.update(AGENT)
+                .set(AGENT.STATUS, (short) 2)
+                .where(AGENT.ID.eq(agentId).and(AGENT.STATUS.eq((short) 1)))
+                .execute();
+        if (numOfAgentsDeactivated != 0) {
+            dslContext.update(CASHIER)
+                    .set(CASHIER.STATUS, (short) 2)
+                    .where(CASHIER.AGENT_ID.eq(agentId).and(CASHIER.STATUS.eq((short) 1)))
+                    .execute();
+        }
+        return numOfAgentsDeactivated;
+    }
+
+    @Override
+    public boolean agentExistsById(Integer agentId) {
+        return dslContext.fetchCount(AGENT, AGENT.ID.eq(agentId)) != 0;
     }
 
     private long findCount() {

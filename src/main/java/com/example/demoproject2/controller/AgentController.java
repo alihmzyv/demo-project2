@@ -26,6 +26,12 @@ import java.util.List;
 public class AgentController {
     AgentService agentService;
 
+    @PostMapping("/deactivate-agent")
+    public void deactivateAgentById(
+            @RequestParam("agent-id") Integer agentId) {
+        agentService.deactivateAgentById(agentId);
+    }
+
     @GetMapping("/2")
     public List<AgentCashiersRespDto> getAllAgents2(
             @ParameterObject Pageable pageable) {

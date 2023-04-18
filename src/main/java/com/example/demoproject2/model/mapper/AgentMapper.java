@@ -5,6 +5,7 @@ import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.model.dto.agent.*;
 import com.example.demoproject2.model.dto.cashier.CashierRespDto;
 import com.example.demoproject2.model.dto.status.StatusCountDto;
+import org.jooq.Record2;
 import org.jooq.Record5;
 import org.jooq.Result;
 import org.mapstruct.Mapper;
@@ -12,6 +13,7 @@ import org.mapstruct.Mapper;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.mapstruct.ReportingPolicy.WARN;
 
@@ -60,11 +62,24 @@ public abstract class AgentMapper {
                 .collect(Collectors.toList());
     }
 
-    public AgentCashiersRespDto toDto(Map.Entry<AgentRecord, Result<CashierRecord>> entrySet) {
-        List<CashierRespDto> cashierRespDtos = cashierMapper.toDto(entrySet.getValue().stream().toList());
+    public List<AgentCashiersRespDto> toDto(Result<Record2<AgentRecord, CashierRecord>> allAgents) {
+        Stream<Record2<AgentRecord, CashierRecord>> agentCashiersMap = allAgents.stream();
+        return agentCashiersMap.collect(Collectors.groupingBy(Record2::component1))
+                .entrySet().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    public AgentCashiersRespDto toDto(Map.Entry<AgentRecord, List<Record2<AgentRecord, CashierRecord>>> entry) {
+        AgentRecord agentRecord = entry.getKey();
+        List<CashierRecord> cashierRecords = entry.getValue().stream()
+                .map(Record2::component2)
+                .toList();
         return AgentCashiersRespDto.builder()
-                .agentRespDto(toDto(entrySet.getKey()))
-                .cashiers(cashierRespDtos)
+                .agentRespDto(toDto(agentRecord))
+                .cashiers(toDtoList(cashierRecords))
                 .build();
     }
+
+    public abstract List<CashierRespDto> toDtoList(List<CashierRecord> cashierRecords);
 }

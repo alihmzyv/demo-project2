@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Record2;
 import org.jooq.Record5;
 import org.jooq.Result;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -41,10 +41,8 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public List<AgentCashiersRespDto> findAllAgents2(Pageable pageable) {
-        Map<AgentRecord, Result<CashierRecord>> allAgents = agentRepo.findAllAgents2(pageable);
-        return allAgents.entrySet().stream()
-                .map(agentMapper::toDto)
-                .toList();
+        Result<Record2<AgentRecord, CashierRecord>> allAgents = agentRepo.findAllAgents2(pageable);
+        return agentMapper.toDto(allAgents);
     }
 
     @Override
@@ -78,5 +76,18 @@ public class AgentServiceImpl implements AgentService {
     public void deleteAgentById(Integer agentId) {
         int deletedRows = agentRepo.deleteAgentById(agentId);
         if (deletedRows == 0) throw new IllegalArgumentException(String.format("Agent not found with id: %d", deletedRows));
+    }
+
+    @Override
+    public void deactivateAgentById(Integer agentId) {
+        if (!agentRepo.agentExistsById(agentId)) {
+            throw new IllegalArgumentException(String.format(
+                    "Agent not found with id: %d", agentId));
+        }
+        int numOfAgentsDeactivated = agentRepo.deactivateAgentById(agentId);
+        if (numOfAgentsDeactivated == 0) {
+            throw new IllegalArgumentException(String.format(
+                    "Agent was already inactive with id: %d", agentId));
+        }
     }
 }

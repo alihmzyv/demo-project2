@@ -24,6 +24,12 @@ import org.springframework.web.bind.annotation.*;
 public class CashierController {
     CashierService cashierService;
 
+    @PostMapping("/deactivate-cashier")
+    public void deactivateCashierById(
+            @RequestParam("cashier-id") Integer cashierId) {
+        cashierService.deactivateCashierById(cashierId);
+    }
+
     @GetMapping("/{cashier-id}")
     public CashierFullRespDto getCashierById(
             @PathVariable("cashier-id") Integer cashierId) {
