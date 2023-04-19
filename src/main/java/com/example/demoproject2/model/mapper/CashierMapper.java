@@ -3,32 +3,56 @@ package com.example.demoproject2.model.mapper;
 import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierSportsStakeLimitsRecord;
 import com.example.demoproject2.model.dto.cashier.*;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import static com.example.demoproject2.generated.jooq.Tables.*;
+import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 import static org.mapstruct.ReportingPolicy.WARN;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = WARN)
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public abstract class CashierMapper {
+    @Autowired
+    CashierSportsStakesLimitsMapper cashierSportsStakesLimitsMapper;
 
-    public abstract CashierSportsStakeLimitsRecord toStakeLimitsRecord(CashierSportsStakeLimitsDto cashierSportsStakeLimitsDto);
-    public abstract List<CashierSportsStakeLimitsRecord> toStakeLimitsRecords(List<CashierSportsStakeLimitsDto> stakeLimits);
+    public CashierDetailedResponseDto toDto(CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> cashierSportsStakeLimitsRecords) {
+        if (cashierRecord == null) {
+            return null;
+        }
 
-    public abstract CashierSportsStakeLimitsDto toStakeLimitsDto(CashierSportsStakeLimitsRecord cashierSportsStakeLimitsDto);
+        CashierResponseDto cashierResponseDto = toCashierResponseDto(cashierRecord);
+        List<CashierSportsStakeLimitsResponseDto> stakeLimitsRecords = cashierSportsStakesLimitsMapper.toCashierSportsStakeLimitsDto(cashierSportsStakeLimitsRecords);
+        return CashierDetailedResponseDto.builder()
+                .cashierResponseDto(cashierResponseDto)
+                .stakeLimits(stakeLimitsRecords)
+                .build();
+    }
 
-    public abstract CashierRecord toCashierRecord(Integer agentId, CreateCashierDto createCashierDto);
+    public List<CashierDetailedResponseDto> toDto(Result<Record> cashierStakeLimits) {
+        Map<CashierRecord, List<CashierSportsStakeLimitsRecord>> agentCashierMap = cashierStakeLimits.collect(
+                groupingBy(r -> r.into(CASHIER),
+                        filtering(r -> r.get(CASHIER_SPORTS_STAKE_LIMITS.SPORTS_ID) != null,
+                                mapping(r -> r.into(CASHIER_SPORTS_STAKE_LIMITS),
+                                        toList()))));
+        List<CashierDetailedResponseDto> cashierDetailedResponseDtos = new ArrayList<>();
+        agentCashierMap.forEach((cashierRecord, stakeLimitsRecords) -> {
+            CashierDetailedResponseDto cashierDetailedResponseDto = toDto(cashierRecord, stakeLimitsRecords);
+            cashierDetailedResponseDtos.add(cashierDetailedResponseDto);
+        });
+        return cashierDetailedResponseDtos;
+    }
 
-    public abstract CashierRecord toCashierRecord(UpdateCashierDto updateCashierDto);
+    public abstract CashierResponseDto toCashierResponseDto(CashierRecord cashierRecord);
+    public abstract CashierSportsStakeLimitsRecord toRecord(CashierSportsStakeLimitsRequestDto cashierSportsStakeLimitsDto);
 
-    @Mapping(target = "cashierRespDto", source = "cashierRecord")
-    public abstract CashierFullRespDto toCashierDto(CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> stakeLimits);
+    public abstract CashierRecord toRecord(CashierCreateRequestDto cashierCreateRequestDto);
 
-    public abstract List<CashierRespDto> toCashierDtos(List<CashierRecord> allCashiersByAgentId);
+    public abstract CashierRecord toRecord(CashierUpdateRequestDto cashierUpdateRequestDto);
 }

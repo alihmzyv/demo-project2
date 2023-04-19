@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CashierFullRespDto {
-    CashierRespDto cashierRespDto;
-    List<CashierSportsStakeLimitsDto> stakeLimits;
+public class CashierDetailedResponseDto {
+    CashierResponseDto cashierResponseDto;
+    List<CashierSportsStakeLimitsResponseDto> stakeLimits;
 }

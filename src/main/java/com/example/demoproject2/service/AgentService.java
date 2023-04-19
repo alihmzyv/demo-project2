@@ -1,17 +1,17 @@
 package com.example.demoproject2.service;
 
-import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
-import com.example.demoproject2.model.dto.agent.CreateAgentDto;
-import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
-import org.springframework.data.domain.Page;
+import com.example.demoproject2.model.dto.agent.AgentCreateRequestDto;
+import com.example.demoproject2.model.dto.agent.AgentDetailedResponseDto;
+import com.example.demoproject2.model.dto.agent.AgentStatusUpdateRequestDto;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface AgentService {
-    Page<AgentDetailedRespDto> findAllAgents(Pageable pageable);
-    AgentDetailedRespDto findAgentById(Integer agentId);
-    AgentDetailedRespDto createAgent(CreateAgentDto createAgentDto);
-
-    AgentDetailedRespDto updateAgent(UpdateAgentDto updateAgentDto);
-
+    List<AgentDetailedResponseDto> findAllAgents(Pageable pageable);
+    AgentDetailedResponseDto findAgentById(Integer agentId);
+    int createAgent(AgentCreateRequestDto agentCreateRequestDto);
     void deleteAgentById(Integer agentId);
+
+    void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto);
 }

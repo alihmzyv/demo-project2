@@ -1,17 +1,23 @@
 package com.example.demoproject2.repo;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
-import org.jooq.Record5;
-import org.springframework.data.domain.PageImpl;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.springframework.data.domain.Pageable;
 
 public interface AgentRepo {
     AgentRecord insertAgent(AgentRecord agentRecord);
 
     AgentRecord updateAgent(AgentRecord agentRecord);
-    Record5<AgentRecord, Integer, Integer, Integer, Integer> findAgentById(Integer agentId);
-
+    Result<Record> findAgentById(Integer agentId);
+    Result<Record> findAllAgents(Pageable pageable);
     int deleteAgentById(Integer agentId);
 
-    PageImpl<Record5<AgentRecord, Integer, Integer, Integer, Integer>> findAllAgents(Pageable pageable);
+    boolean agentExistsById(Integer agentId);
+    int countActiveCashiers(Integer agentId);
+
+    void updateAgentStatus(Integer agentId, Short newStatus);
+    void updateCashiersStatusByAgentId(Integer agentId, Short newStatus);
+
+    void updateAgentStatus(Integer agentId);
 }

@@ -1,9 +1,9 @@
 package com.example.demoproject2.service.impl;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
-import com.example.demoproject2.model.dto.agent.AgentDetailedRespDto;
-import com.example.demoproject2.model.dto.agent.CreateAgentDto;
-import com.example.demoproject2.model.dto.agent.UpdateAgentDto;
+import com.example.demoproject2.model.dto.agent.AgentCreateRequestDto;
+import com.example.demoproject2.model.dto.agent.AgentDetailedResponseDto;
+import com.example.demoproject2.model.dto.agent.AgentStatusUpdateRequestDto;
 import com.example.demoproject2.model.mapper.AgentMapper;
 import com.example.demoproject2.repo.AgentRepo;
 import com.example.demoproject2.service.AgentService;
@@ -11,14 +11,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.Record5;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -29,42 +27,40 @@ public class AgentServiceImpl implements AgentService {
     AgentRepo agentRepo;
 
     @Override
-    public Page<AgentDetailedRespDto> findAllAgents(Pageable pageable) {
-        PageImpl<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgentsPage = agentRepo.findAllAgents(pageable);
-        List<AgentDetailedRespDto> agentDetailedRespDtos = agentMapper.toAgentRespDto(allAgentsPage.getContent());
-        return new PageImpl<>(agentDetailedRespDtos, pageable, allAgentsPage.getTotalElements());
+    public List<AgentDetailedResponseDto> findAllAgents(Pageable pageable) {
+        Result<Record> allAgents = agentRepo.findAllAgents(pageable);
+        return agentMapper.toAgentDetailedResponseDto(allAgents);
     }
 
     @Override
-    public AgentDetailedRespDto findAgentById(Integer agentId) {
-        Record5<AgentRecord, Integer, Integer, Integer, Integer> agentById = agentRepo.findAgentById(agentId);
-        AgentDetailedRespDto agentDetailedRespDto = agentMapper.toDto(agentById);
-        return Optional.ofNullable(agentDetailedRespDto)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Agent not found with id: %d", agentId)));
+    public AgentDetailedResponseDto findAgentById(Integer agentId) {
+        Result<Record> agentById = agentRepo.findAgentById(agentId);
+        if (agentById.isEmpty()) {
+            throw new IllegalArgumentException(String.format("Agent not found with id = %d", agentId));
+        } else return agentMapper.toAgentDetailedResponseDto(agentById).get(0); //there is one agent only
     }
 
     @Override
-    public AgentDetailedRespDto createAgent(CreateAgentDto createAgentDto) {
-        AgentRecord agentRecord = agentMapper.toRecord(createAgentDto);
+    public int createAgent(AgentCreateRequestDto agentCreateRequestDto) {
+        AgentRecord agentRecord = agentMapper.toRecord(agentCreateRequestDto);
         AgentRecord agentRecordInserted = agentRepo.insertAgent(agentRecord);
-        log.info("Id of agentRecord after insertion:{}", agentRecord.getId());
-        Record5<AgentRecord, Integer, Integer, Integer, Integer> agentById = agentRepo.findAgentById(agentRecordInserted.getId());
-        return agentMapper.toDto(agentById);
-    }
-
-    @Override
-    public AgentDetailedRespDto updateAgent(UpdateAgentDto updateAgentDto) {
-        AgentRecord agentRecord = agentMapper.toRecord(updateAgentDto);
-        return Optional.ofNullable(agentRepo.updateAgent(agentRecord))
-                .map(agentRecordUpdated -> agentRepo.findAgentById(agentRecordUpdated.getId()))
-                .map(agentMapper::toDto)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(String.format("Agent not found with id: %d", updateAgentDto.getId())));
+        return agentRecordInserted.getId();
     }
 
     @Override
     public void deleteAgentById(Integer agentId) {
         int deletedRows = agentRepo.deleteAgentById(agentId);
-        if (deletedRows == 0) throw new IllegalArgumentException(String.format("Agent not found with id: %d", deletedRows));
+        if (deletedRows == 0) throw new IllegalArgumentException(String.format("Agent not found with id: %d", agentId));
+    }
+
+    @Override
+    public void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto) {
+        log.info(agentStatusUpdateRequestDto.getComment()); //log to db TODO
+        Integer agentId = agentStatusUpdateRequestDto.getAgentId();
+        Short newStatus = agentStatusUpdateRequestDto.getNewStatus();
+        if (!agentRepo.agentExistsById(agentId)) {
+            throw new IllegalArgumentException(String.format("Agent not found with id: %d", agentId));
+        }
+        agentRepo.updateAgentStatus(agentId, newStatus);
     }
 }

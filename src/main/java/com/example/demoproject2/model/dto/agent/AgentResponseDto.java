@@ -11,20 +11,22 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AgentRespDto {
+public class AgentResponseDto {
     Integer id;
+    Integer agentCode;
+    String voen;
     String fullName;
+    String type;
     Integer cityId;
     String address;
-    Integer agentCode;
+    Short status;
     String idNumber;
-    String voen;
     String phone;
     String mobile;
     String email;
     String salesRepEmail;
+    //finance
     BigDecimal totalPermanentBalance;
     BigDecimal debtCredit;
-    BigDecimal extraDebtCredit;
-    Short status;
+    String extraDebtCredit;
 }

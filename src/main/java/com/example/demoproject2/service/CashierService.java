@@ -1,20 +1,17 @@
 package com.example.demoproject2.service;
 
-import com.example.demoproject2.model.dto.cashier.CashierFullRespDto;
-import com.example.demoproject2.model.dto.cashier.CashierRespDto;
-import com.example.demoproject2.model.dto.cashier.CreateCashierDto;
-import com.example.demoproject2.model.dto.cashier.UpdateCashierDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.example.demoproject2.consts.BalanceType;
+import com.example.demoproject2.model.dto.cashier.*;
 
 public interface CashierService {
-    CashierFullRespDto createCashier(Integer agentId, CreateCashierDto createCashierDto);
-
-    CashierFullRespDto updateCashier(UpdateCashierDto updateCashierDto);
-
-    CashierFullRespDto findCashierById(Integer cashierId);
-
-    Page<CashierRespDto> findAllCashiersByAgentId(Integer agentId, Pageable pageable);
-
+    int createCashier(Integer agentId, CashierCreateRequestDto cashierCreateRequestDto);
     void deleteCashierById(Integer cashierId);
+
+    void updateCashierStatus(CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto);
+
+    CashierDetailedResponseDto findCashierById(int cashierInsertedId);
+
+    void updateCashier(CashierUpdateRequestDto cashierUpdateRequestDto);
+
+    void updateBalance(CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto, BalanceType balanceType);
 }

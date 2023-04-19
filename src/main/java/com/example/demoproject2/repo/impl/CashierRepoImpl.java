@@ -1,36 +1,41 @@
 package com.example.demoproject2.repo.impl;
 
-import com.example.demoproject2.generated.jooq.Keys;
+import com.example.demoproject2.consts.BalanceChangeType;
+import com.example.demoproject2.consts.BalanceType;
 import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierSportsStakeLimitsRecord;
+import com.example.demoproject2.repo.AgentRepo;
 import com.example.demoproject2.repo.CashierRepo;
-import com.example.demoproject2.util.PageUtil;
+import com.example.demoproject2.util.JooqUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record2;
-import org.jooq.SortField;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
+import org.jooq.Record;
+import org.jooq.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.demoproject2.consts.Conditions.CASHIER_IS_DELETED;
+import static com.example.demoproject2.consts.BalanceChangeType.DECREASE;
+import static com.example.demoproject2.consts.BalanceChangeType.INCREASE;
+import static com.example.demoproject2.consts.Condition.CASHIER_IS_DELETED;
+import static com.example.demoproject2.consts.Condition.CASHIER_IS_NOT_DELETED;
 import static com.example.demoproject2.generated.jooq.Tables.CASHIER;
 import static com.example.demoproject2.generated.jooq.Tables.CASHIER_SPORTS_STAKE_LIMITS;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Slf4j
 @Repository
 public class CashierRepoImpl implements CashierRepo {
     DSLContext dslContext;
+    AgentRepo agentRepo;
+    JooqUtil jooqUtil;
 
     @Override
     public CashierRecord insertCashier(Integer agentId, CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> stakeLimitsRecords) {
@@ -49,13 +54,13 @@ public class CashierRepoImpl implements CashierRepo {
     }
 
     @Override
-    public Record2<CashierRecord, CashierSportsStakeLimitsRecord> [] findCashierById(Integer cashierId) {
-        return dslContext.select(CASHIER, CASHIER_SPORTS_STAKE_LIMITS)
+    public Result<Record> findCashierById(Integer cashierId) {
+        return dslContext.select()
                 .from(CASHIER)
                 .leftJoin(CASHIER_SPORTS_STAKE_LIMITS)
-                .onKey(Keys.CASHIER_SPORTS_STAKE_LIMITS__CASHIER_SPORTS_STAKE_LIMITS_CASHIER_ID_FK)
-                .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierId)))
-                .fetchArray();
+                .on(CASHIER_SPORTS_STAKE_LIMITS.CASHIER_ID.eq(CASHIER.ID))
+                .where(CASHIER_IS_NOT_DELETED.and(CASHIER.ID.eq(cashierId)))
+                .fetch();
     }
 
     @Override
@@ -83,24 +88,71 @@ public class CashierRepoImpl implements CashierRepo {
     }
 
     @Override
-    public PageImpl<CashierRecord> findAllCashiersByAgentId(Integer agentId, Pageable pageable) {
-        Collection<SortField<?>> orderByFields = PageUtil.getOrderByFields(CASHIER, pageable.getSort());
-        List<CashierRecord> cashierRecords = dslContext.selectFrom(CASHIER)
-                .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.AGENT_ID.eq(agentId)))
-                .groupBy(CASHIER.ID)
-                .orderBy(orderByFields)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchStream()
-                .toList();
-        return new PageImpl<>(cashierRecords, pageable, findCount());
-    }
-
-    @Override
     public int deleteCashierById(Integer cashierId) {
         return dslContext.update(CASHIER)
                 .set(CASHIER.STATUS, (short) 3)
                 .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierId)))
+                .execute();
+    }
+
+    @Override
+    public void updateCashierStatus(Integer cashierId, Short newStatus) {
+        int updatedCashiers = dslContext.update(CASHIER)
+                .set(CASHIER.STATUS, newStatus)
+                .where(CASHIER.ID.eq(cashierId).and(CASHIER_IS_NOT_DELETED))
+                .execute();
+        if (updatedCashiers != 0) {
+            Integer agentId = findAgentIdByCashierId(cashierId);
+            agentRepo.updateAgentStatus(agentId);
+        }
+    }
+
+    @Override
+    public boolean cashierExistsById(Integer cashierId) {
+        return dslContext.fetchCount(CASHIER, CASHIER_IS_NOT_DELETED.and(CASHIER.ID.eq(cashierId))) != 0;
+    }
+
+    @Override
+    public Integer findAgentIdByCashierId(Integer cashierId) {
+        return Optional.ofNullable(dslContext.select(CASHIER.AGENT_ID)
+                        .from(CASHIER)
+                        .where(CASHIER.ID.eq(cashierId))
+                        .fetchOne())
+                .map(Record1::component1)
+                .orElse(null);
+    }
+
+    @Override
+    public void updateBalance(Integer cashierId, BalanceType balanceType, BalanceChangeType balanceChangeType, BigDecimal amount) {
+        //find balance field
+        Optional<Field<BigDecimal>> fieldOptional = jooqUtil.findField(
+                CASHIER,
+                balanceType.name(),
+                BigDecimal.class);
+        fieldOptional.ifPresentOrElse(
+                field -> {
+                    Record cashier = findCashierById(cashierId).get(0);
+                    BigDecimal previousAmount = cashier.get(field); //previous amount
+                    BigDecimal updatedAmount;
+                    if (balanceChangeType.equals(DECREASE)) {
+                        updatedAmount = previousAmount.subtract(amount); //decrease amount
+                    } else if (balanceChangeType.equals(INCREASE)) {
+                        updatedAmount = previousAmount.add(amount); //increase amount
+                    } else {
+                        throw new IllegalArgumentException(String.format("Balance change type is incorrect: %s", balanceChangeType));
+                    }
+                    updateBalance(cashierId, field, updatedAmount); //set the balance to the updatedAmount
+        }, () -> {
+                    //balance field not found
+            throw new IllegalArgumentException(String.format("Balance type is incorrect: %s", balanceType));
+        });
+    }
+
+    @Override
+    public void updateBalance(Integer cashierId, Field<BigDecimal> field, BigDecimal newAmount) {
+        dslContext.update(CASHIER)
+                .set(field, newAmount)
+                .where(CASHIER.ID.eq(cashierId))
                 .execute();
     }
 

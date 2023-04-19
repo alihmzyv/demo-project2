@@ -1,7 +1,7 @@
 package com.example.demoproject2.model.dto.cashier;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,7 +17,7 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSA
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class CreateCashierDto {
+public class CashierCreateRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer cashierCode;
     String provider;
@@ -36,8 +36,8 @@ public class CreateCashierDto {
     String macAddress;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     BigDecimal nextPermanentBalance;
-    @NotEmpty
-    List<CashierSportsStakeLimitsDto> cashierSportsStakeLimitDtos;
+    @Size(min = 2, max = 2)
+    List<CashierSportsStakeLimitsRequestDto> cashierSportsStakeLimitDtos;
     BigDecimal extraDebtCredit;
     BigDecimal debtCredit;
     BigDecimal betTicketPayoutLimit;

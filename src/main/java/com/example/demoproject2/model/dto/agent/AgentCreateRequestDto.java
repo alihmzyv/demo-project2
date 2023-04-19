@@ -1,8 +1,6 @@
 package com.example.demoproject2.model.dto.agent;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
@@ -18,7 +16,7 @@ import static com.example.demoproject2.consts.Validation.*;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class CreateAgentDto {
+public class AgentCreateRequestDto {
     @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String fullName;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
@@ -34,6 +32,8 @@ public class CreateAgentDto {
     String phone;
     @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String mobile;
+    @Min(value = 1, message = DEFAULT_VALID_AGENT_STATUS_MESSAGE)
+    @Max(value = 2, message = DEFAULT_VALID_AGENT_STATUS_MESSAGE)
     Short status;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String email;
