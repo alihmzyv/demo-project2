@@ -1,4 +1,4 @@
-package com.example.demoproject2.model.dto.status;
+package com.example.demoproject2.model.dto.status.resp;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StatusCountDto {
+public class StatusCountRespDto {
     Short statusId;
     Integer count;
 }

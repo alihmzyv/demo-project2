@@ -1,4 +1,4 @@
-package com.example.demoproject2.model.dto.cashier;
+package com.example.demoproject2.model.dto.cashier.req;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -6,8 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
-import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_FROZEN_STATUS_MESSAGE;
+import static com.example.demoproject2.consts.Validation.*;
 
 @Getter
 @Setter
@@ -24,7 +23,9 @@ public class CashierUpdateRequestDto {
     String fullName;
     String phone;
     String mobile;
+    @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String email;
+    @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String salesRepEmail;
     Integer zoneId;
     Integer cityId;
@@ -34,6 +35,5 @@ public class CashierUpdateRequestDto {
     @Min(value = 1, message = DEFAULT_VALID_FROZEN_STATUS_MESSAGE)
     @Max(value = 2, message = DEFAULT_VALID_FROZEN_STATUS_MESSAGE)
     Short frozenStatus;
-    @Size(min = 1)
     List<CashierSportsStakeLimitsRequestDto> cashierSportsStakeLimits;
 }

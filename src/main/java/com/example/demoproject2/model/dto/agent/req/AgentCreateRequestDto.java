@@ -1,4 +1,4 @@
-package com.example.demoproject2.model.dto.agent;
+package com.example.demoproject2.model.dto.agent.req;
 
 import jakarta.validation.constraints.*;
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.example.demoproject2.model.dto.cashier;
+package com.example.demoproject2.model.dto.cashier.req;
 
 import com.example.demoproject2.consts.BalanceChangeType;
 import jakarta.validation.constraints.Min;

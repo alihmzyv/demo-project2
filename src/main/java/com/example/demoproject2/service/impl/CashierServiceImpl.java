@@ -4,7 +4,11 @@ import com.example.demoproject2.consts.BalanceChangeType;
 import com.example.demoproject2.consts.BalanceType;
 import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierSportsStakeLimitsRecord;
-import com.example.demoproject2.model.dto.cashier.*;
+import com.example.demoproject2.model.dto.cashier.req.CashierCreateRequestDto;
+import com.example.demoproject2.model.dto.cashier.req.CashierUpdateBalanceRequestDto;
+import com.example.demoproject2.model.dto.cashier.req.CashierUpdateRequestDto;
+import com.example.demoproject2.model.dto.cashier.req.CashierUpdateStatusRequestDto;
+import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
 import com.example.demoproject2.model.mapper.CashierMapper;
 import com.example.demoproject2.model.mapper.CashierSportsStakesLimitsMapper;
 import com.example.demoproject2.repo.CashierRepo;
@@ -48,15 +52,18 @@ public class CashierServiceImpl implements CashierService {
 
     @Override
     public void updateCashierStatus(Integer cashierId, CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
+        requiresCashierExistsById(cashierId);
         log.info(cashierUpdateStatusRequestDto.getComment()); //TODO: log to db
         Short newStatus = cashierUpdateStatusRequestDto.getNewStatus();
         cashierRepo.updateCashierStatus(cashierId, newStatus);
     }
 
     @Override
-    public CashierDetailedResponseDto findCashierById(int cashierInsertedId) {
-        Result<Record> cashierById = cashierRepo.findCashierById(cashierInsertedId);
-        return cashierMapper.toDto(cashierById).get(0);
+    public CashierDetailedResponseDto findCashierById(int cashierId) {
+        Result<Record> cashierById = cashierRepo.findCashierById(cashierId);
+        if (cashierById.isEmpty()) {
+            throw new IllegalArgumentException(String.format("Cashier not found with id=%d", cashierId));
+        } else return cashierMapper.toDto(cashierById).get(0);
     }
 
     @Override
@@ -75,5 +82,12 @@ public class CashierServiceImpl implements CashierService {
         BalanceChangeType balanceChangeType = cashierUpdateBalanceRequestDto.getBalanceChangeType();
         BigDecimal amount = cashierUpdateBalanceRequestDto.getAmount();
         cashierRepo.updateBalance(cashierId, balanceType, balanceChangeType, amount);
+    }
+
+    @Override
+    public void requiresCashierExistsById(Integer cashierId) {
+        if (!cashierRepo.cashierExistsById(cashierId)) {
+            throw new IllegalArgumentException(String.format("Cashier not found with id=%d", cashierId));
+        }
     }
 }

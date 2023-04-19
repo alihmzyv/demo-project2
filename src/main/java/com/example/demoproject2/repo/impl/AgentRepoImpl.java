@@ -131,9 +131,4 @@ public class AgentRepoImpl implements AgentRepo {
             updateAgentStatus(agentId, Status.ACTIVE_STATUS_VALUE);
         }
     }
-
-
-    private long findCount() {
-        return dslContext.fetchCount(AGENT);
-    }
 }

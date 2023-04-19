@@ -1,4 +1,4 @@
-package com.example.demoproject2.model.dto.agent;
+package com.example.demoproject2.model.dto.agent.resp;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -28,5 +28,5 @@ public class AgentResponseDto {
     //finance
     BigDecimal totalPermanentBalance;
     BigDecimal debtCredit;
-    String extraDebtCredit;
+    BigDecimal extraDebtCredit;
 }

@@ -1,8 +1,11 @@
 package com.example.demoproject2.controller;
 
-import com.example.demoproject2.model.dto.agent.*;
-import com.example.demoproject2.model.dto.cashier.CashierDetailedResponseDto;
-import com.example.demoproject2.model.dto.cashier.CashierCreateRequestDto;
+import com.example.demoproject2.model.dto.agent.req.AgentCreateRequestDto;
+import com.example.demoproject2.model.dto.agent.req.AgentStatusUpdateRequestDto;
+import com.example.demoproject2.model.dto.agent.req.AgentUpdateRequestDto;
+import com.example.demoproject2.model.dto.agent.resp.AgentDetailedResponseDto;
+import com.example.demoproject2.model.dto.cashier.req.CashierCreateRequestDto;
+import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
 import com.example.demoproject2.service.AgentService;
 import com.example.demoproject2.service.CashierService;
 import jakarta.validation.Valid;
@@ -45,11 +48,17 @@ public class AgentController {
         return agentService.findAgentById(insertedAgentId);
     }
 
-    @PatchMapping("/{agent-id}/update-status")
+    @PutMapping
+    public AgentDetailedResponseDto updateAgent(
+            @RequestBody @Valid AgentUpdateRequestDto agentUpdateRequestDto) {
+        agentService.updateAgent(agentUpdateRequestDto);
+        return agentService.findAgentById(agentUpdateRequestDto.getId());
+    }
+
+    @PatchMapping("/update-status")
     public void updateAgentStatus(
-            @PathVariable("agent-id") Integer agentId,
             @RequestBody @Valid AgentStatusUpdateRequestDto agentStatusUpdateRequestDto) {
-        agentService.updateAgentStatus(agentStatusUpdateRequestDto, agentId);
+        agentService.updateAgentStatus(agentStatusUpdateRequestDto);
     }
 
     @DeleteMapping("/{agent-id}")

@@ -1,4 +1,4 @@
-package com.example.demoproject2.model.dto.agent;
+package com.example.demoproject2.model.dto.agent.req;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
-import static com.example.demoproject2.consts.Validation.*;
+import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MESSAGE;
+import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_VOEN_MESSAGE;
 
 @Getter
 @Setter
@@ -16,7 +17,7 @@ import static com.example.demoproject2.consts.Validation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 public class AgentUpdateRequestDto {
-    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
+    @NotNull
     Integer id;
     Integer agentCode;
     String fullName;

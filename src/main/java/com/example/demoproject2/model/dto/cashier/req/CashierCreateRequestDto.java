@@ -1,7 +1,7 @@
-package com.example.demoproject2.model.dto.cashier;
+package com.example.demoproject2.model.dto.cashier.req;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
+import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MESSAGE;
 
 @Getter
 @Setter
@@ -36,11 +37,12 @@ public class CashierCreateRequestDto {
     String macAddress;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     BigDecimal nextPermanentBalance;
-    @Size(min = 2, max = 2)
     List<CashierSportsStakeLimitsRequestDto> cashierSportsStakeLimitDtos;
     BigDecimal extraDebtCredit;
     BigDecimal debtCredit;
     BigDecimal betTicketPayoutLimit;
+    @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String email;
+    @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String salesRepEmail;
 }

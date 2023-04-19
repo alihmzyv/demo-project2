@@ -1,7 +1,7 @@
-package com.example.demoproject2.model.dto.agent;
+package com.example.demoproject2.model.dto.agent.resp;
 
-import com.example.demoproject2.model.dto.cashier.CashierDetailedResponseDto;
-import com.example.demoproject2.model.dto.status.StatusCountDto;
+import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
+import com.example.demoproject2.model.dto.status.resp.StatusCountRespDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,5 +17,5 @@ public class AgentDetailedResponseDto {
     AgentResponseDto agentDto;
     List<CashierDetailedResponseDto> cashierRespDtos;
     Integer numberOfCashiers;
-    List<StatusCountDto> cashiersStatusCountDtos;
+    List<StatusCountRespDto> cashiersStatusCountRespDtos;
 }

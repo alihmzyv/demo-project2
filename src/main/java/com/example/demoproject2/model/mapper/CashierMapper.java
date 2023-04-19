@@ -2,7 +2,11 @@ package com.example.demoproject2.model.mapper;
 
 import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierSportsStakeLimitsRecord;
-import com.example.demoproject2.model.dto.cashier.*;
+import com.example.demoproject2.model.dto.cashier.req.CashierCreateRequestDto;
+import com.example.demoproject2.model.dto.cashier.req.CashierUpdateRequestDto;
+import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
+import com.example.demoproject2.model.dto.cashier.resp.CashierResponseDto;
+import com.example.demoproject2.model.dto.cashier.resp.CashierSportsStakeLimitsResponseDto;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.mapstruct.Mapper;
@@ -12,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.demoproject2.generated.jooq.Tables.*;
+import static com.example.demoproject2.generated.jooq.Tables.CASHIER;
+import static com.example.demoproject2.generated.jooq.Tables.CASHIER_SPORTS_STAKE_LIMITS;
 import static java.util.stream.Collectors.*;
-import static java.util.stream.Collectors.toList;
 import static org.mapstruct.ReportingPolicy.WARN;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = WARN)
@@ -27,8 +31,8 @@ public abstract class CashierMapper {
             return null;
         }
 
-        CashierResponseDto cashierResponseDto = toCashierResponseDto(cashierRecord);
-        List<CashierSportsStakeLimitsResponseDto> stakeLimitsRecords = cashierSportsStakesLimitsMapper.toCashierSportsStakeLimitsDto(cashierSportsStakeLimitsRecords);
+        CashierResponseDto cashierResponseDto = toDto(cashierRecord);
+        List<CashierSportsStakeLimitsResponseDto> stakeLimitsRecords = cashierSportsStakesLimitsMapper.toDto(cashierSportsStakeLimitsRecords);
         return CashierDetailedResponseDto.builder()
                 .cashierResponseDto(cashierResponseDto)
                 .stakeLimits(stakeLimitsRecords)
@@ -49,10 +53,7 @@ public abstract class CashierMapper {
         return cashierDetailedResponseDtos;
     }
 
-    public abstract CashierResponseDto toCashierResponseDto(CashierRecord cashierRecord);
-    public abstract CashierSportsStakeLimitsRecord toRecord(CashierSportsStakeLimitsRequestDto cashierSportsStakeLimitsDto);
-
+    public abstract CashierResponseDto toDto(CashierRecord cashierRecord);
     public abstract CashierRecord toRecord(CashierCreateRequestDto cashierCreateRequestDto);
-
     public abstract CashierRecord toRecord(CashierUpdateRequestDto cashierUpdateRequestDto);
 }

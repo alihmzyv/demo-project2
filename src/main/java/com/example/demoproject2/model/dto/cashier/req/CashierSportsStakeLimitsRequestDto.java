@@ -1,4 +1,4 @@
-package com.example.demoproject2.model.dto.cashier;
+package com.example.demoproject2.model.dto.cashier.req;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

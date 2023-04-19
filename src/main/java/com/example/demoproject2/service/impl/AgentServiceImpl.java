@@ -1,9 +1,10 @@
 package com.example.demoproject2.service.impl;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
-import com.example.demoproject2.model.dto.agent.AgentCreateRequestDto;
-import com.example.demoproject2.model.dto.agent.AgentDetailedResponseDto;
-import com.example.demoproject2.model.dto.agent.AgentStatusUpdateRequestDto;
+import com.example.demoproject2.model.dto.agent.req.AgentCreateRequestDto;
+import com.example.demoproject2.model.dto.agent.req.AgentUpdateRequestDto;
+import com.example.demoproject2.model.dto.agent.resp.AgentDetailedResponseDto;
+import com.example.demoproject2.model.dto.agent.req.AgentStatusUpdateRequestDto;
 import com.example.demoproject2.model.mapper.AgentMapper;
 import com.example.demoproject2.repo.AgentRepo;
 import com.example.demoproject2.service.AgentService;
@@ -29,7 +30,7 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public List<AgentDetailedResponseDto> findAllAgents(Pageable pageable) {
         Result<Record> allAgents = agentRepo.findAllAgents(pageable);
-        return agentMapper.toAgentDetailedResponseDto(allAgents);
+        return agentMapper.toDto(allAgents);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class AgentServiceImpl implements AgentService {
         Result<Record> agentById = agentRepo.findAgentById(agentId);
         if (agentById.isEmpty()) {
             throw new IllegalArgumentException(String.format("Agent not found with id = %d", agentId));
-        } else return agentMapper.toAgentDetailedResponseDto(agentById).get(0); //there can be one agent only by the id
+        } else return agentMapper.toDto(agentById).get(0); //there can be one agent only by the id
     }
 
     @Override
@@ -54,12 +55,24 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto, Integer agentId) {
+    public void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto) {
         log.info(agentStatusUpdateRequestDto.getComment()); //log to db TODO
+        Integer agentId = agentStatusUpdateRequestDto.getId();
+        requiresAgentExistsById(agentId);
         Short newStatus = agentStatusUpdateRequestDto.getNewStatus();
-        if (!agentRepo.agentExistsById(agentId)) {
-            throw new IllegalArgumentException(String.format("Agent not found with id: %d", agentId));
-        }
         agentRepo.updateAgentStatus(agentId, newStatus);
+    }
+
+    @Override
+    public void updateAgent(AgentUpdateRequestDto agentUpdateRequestDto) {
+        requiresAgentExistsById(agentUpdateRequestDto.getId());
+        AgentRecord agentRecord = agentMapper.toRecord(agentUpdateRequestDto);
+        agentRepo.updateAgent(agentRecord);
+    }
+
+    @Override
+    public void requiresAgentExistsById(Integer agentId) {
+        if (!agentRepo.agentExistsById(agentId))
+            throw new IllegalArgumentException(String.format("Agent not found with id=%d", agentId));
     }
 }

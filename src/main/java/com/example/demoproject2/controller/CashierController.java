@@ -1,10 +1,10 @@
 package com.example.demoproject2.controller;
 
 import com.example.demoproject2.consts.BalanceType;
-import com.example.demoproject2.model.dto.cashier.CashierDetailedResponseDto;
-import com.example.demoproject2.model.dto.cashier.CashierUpdateBalanceRequestDto;
-import com.example.demoproject2.model.dto.cashier.CashierUpdateRequestDto;
-import com.example.demoproject2.model.dto.cashier.CashierUpdateStatusRequestDto;
+import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
+import com.example.demoproject2.model.dto.cashier.req.CashierUpdateBalanceRequestDto;
+import com.example.demoproject2.model.dto.cashier.req.CashierUpdateRequestDto;
+import com.example.demoproject2.model.dto.cashier.req.CashierUpdateStatusRequestDto;
 import com.example.demoproject2.service.CashierService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;

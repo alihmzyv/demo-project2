@@ -1,4 +1,4 @@
-package com.example.demoproject2.model.dto.cashier;
+package com.example.demoproject2.model.dto.cashier.resp;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

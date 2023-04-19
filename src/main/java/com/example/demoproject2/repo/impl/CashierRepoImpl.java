@@ -156,8 +156,4 @@ public class CashierRepoImpl implements CashierRepo {
                 .where(CASHIER.ID.eq(cashierId))
                 .execute();
     }
-
-    private long findCount() {
-        return dslContext.fetchCount(CASHIER);
-    }
 }
