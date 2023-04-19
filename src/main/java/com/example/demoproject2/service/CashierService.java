@@ -7,7 +7,7 @@ public interface CashierService {
     int createCashier(Integer agentId, CashierCreateRequestDto cashierCreateRequestDto);
     void deleteCashierById(Integer cashierId);
 
-    void updateCashierStatus(CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto);
+    void updateCashierStatus(Integer cashierId, CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto);
 
     CashierDetailedResponseDto findCashierById(int cashierInsertedId);
 

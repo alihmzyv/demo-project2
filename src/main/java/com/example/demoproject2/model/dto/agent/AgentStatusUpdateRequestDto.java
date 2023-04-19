@@ -17,8 +17,6 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_AGENT_STA
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AgentStatusUpdateRequestDto {
-    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
-    Integer agentId;
     @Min(value = 1, message = DEFAULT_VALID_AGENT_STATUS_MESSAGE)
     @Max(value = 2, message = DEFAULT_VALID_AGENT_STATUS_MESSAGE)
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)

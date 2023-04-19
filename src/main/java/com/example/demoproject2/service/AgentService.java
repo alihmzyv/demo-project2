@@ -12,6 +12,5 @@ public interface AgentService {
     AgentDetailedResponseDto findAgentById(Integer agentId);
     int createAgent(AgentCreateRequestDto agentCreateRequestDto);
     void deleteAgentById(Integer agentId);
-
-    void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto);
+    void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto, Integer agentId);
 }

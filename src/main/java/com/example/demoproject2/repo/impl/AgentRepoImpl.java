@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.demoproject2.consts.Condition.*;
+import static com.example.demoproject2.consts.Status.DELETED_STATUS_VALUE;
 import static com.example.demoproject2.generated.jooq.Tables.*;
 import static org.jooq.impl.DSL.count;
 
@@ -80,7 +81,7 @@ public class AgentRepoImpl implements AgentRepo {
     @Override
     public int deleteAgentById(Integer agentId) {
         return dslContext.update(AGENT)
-                .set(AGENT.STATUS, (short) 3)
+                .set(AGENT.STATUS, DELETED_STATUS_VALUE)
                 .where(AGENT_IS_DELETED.isFalse().and(AGENT.ID.eq(agentId)))
                 .execute();
     }

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.demoproject2.consts.Status.*;
 import static com.example.demoproject2.generated.jooq.Tables.*;
 import static java.util.stream.Collectors.*;
 import static org.mapstruct.ReportingPolicy.WARN;
@@ -46,12 +47,6 @@ public abstract class AgentMapper {
                         filtering(r -> r.get(CASHIER.ID) != null,
                                 mapping(r -> r.into(CASHIER),
                                         toList()))));
-        log.info("agentCashierMap: {}", agentCashierMap);
-        log.info("agentCashierMap size: {}", agentCashierMap.size());
-        agentCashierMap.forEach((agentRecord, cashierRecords) -> {
-            log.info("Agent record: {}", agentRecord);
-            log.info("Cashier record: {}", cashierRecords);
-        });
         Map<CashierRecord, List<CashierSportsStakeLimitsRecord>> cashierLimitsMap = agentCashiersLimitsRecords.collect(
                 groupingBy(r -> r.into(CASHIER),
                         filtering(r -> r.get(CASHIER_SPORTS_STAKE_LIMITS.CASHIER_ID) != null,
@@ -66,7 +61,6 @@ public abstract class AgentMapper {
             cashierRecords.forEach(cashierRecord -> {
                 List<CashierSportsStakeLimitsRecord> limitsRecords = cashierLimitsMap.getOrDefault(cashierRecord, jooqUtil.emptyResult(CASHIER_SPORTS_STAKE_LIMITS));
                 CashierDetailedResponseDto cashierDto = cashierMapper.toDto(cashierRecord, limitsRecords);
-                log.info("CashierDetailRespDto: {}", cashierDto);
                 cashierDtos.add(cashierDto);
             });
 
@@ -80,15 +74,15 @@ public abstract class AgentMapper {
 
     public AgentDetailedResponseDto toAgentDetailedResponseDto(AgentRecord agentRecord, List<CashierDetailedResponseDto> cashierDetailedResponseDtos) {
         StatusCountDto countActives = StatusCountDto.builder()
-                .statusId((short) 1)
+                .statusId(ACTIVE_STATUS_VALUE)
                 .count(0)
                 .build();
         StatusCountDto countInactives = StatusCountDto.builder()
-                .statusId((short) 2)
+                .statusId(INACTIVE_STATUS_VALUE)
                 .count(0)
                 .build();
         StatusCountDto countDeleted = StatusCountDto.builder()
-                .statusId((short) 3)
+                .statusId(DELETED_STATUS_VALUE)
                 .count(0)
                 .build();
         cashierDetailedResponseDtos.forEach(cashierDetailedResponseDto -> {
