@@ -37,7 +37,7 @@ public class AgentServiceImpl implements AgentService {
         Result<Record> agentById = agentRepo.findAgentById(agentId);
         if (agentById.isEmpty()) {
             throw new IllegalArgumentException(String.format("Agent not found with id = %d", agentId));
-        } else return agentMapper.toAgentDetailedResponseDto(agentById).get(0); //there is one agent only
+        } else return agentMapper.toAgentDetailedResponseDto(agentById).get(0); //there can be one agent only by the id
     }
 
     @Override
@@ -54,9 +54,8 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto) {
+    public void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto, Integer agentId) {
         log.info(agentStatusUpdateRequestDto.getComment()); //log to db TODO
-        Integer agentId = agentStatusUpdateRequestDto.getAgentId();
         Short newStatus = agentStatusUpdateRequestDto.getNewStatus();
         if (!agentRepo.agentExistsById(agentId)) {
             throw new IllegalArgumentException(String.format("Agent not found with id: %d", agentId));

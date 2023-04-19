@@ -22,10 +22,11 @@ import org.springframework.web.bind.annotation.*;
 public class CashierController {
     CashierService cashierService;
 
-    @PatchMapping("/update-status")
+    @PatchMapping("/{cashier-id}/update-status")
     public void updateCashierStatus(
+            @PathVariable("cashier-id") Integer cashierId,
             @RequestBody @Valid CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
-        cashierService.updateCashierStatus(cashierUpdateStatusRequestDto);
+        cashierService.updateCashierStatus(cashierId, cashierUpdateStatusRequestDto);
     }
 
     @PutMapping("/{cashier-id}")
@@ -33,6 +34,13 @@ public class CashierController {
             @RequestBody @Valid CashierUpdateRequestDto cashierUpdateRequestDto) {
         cashierService.updateCashier(cashierUpdateRequestDto);
         return cashierService.findCashierById(cashierUpdateRequestDto.getId());
+    }
+
+    @DeleteMapping("/{cashier-id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteCashierById(
+            @PathVariable("cashier-id") Integer cashierId) {
+        cashierService.deleteCashierById(cashierId);
     }
 
     @PatchMapping("/update-next-permanent-balance")
@@ -57,12 +65,5 @@ public class CashierController {
     public void updateExtraDebtCredit(
             @RequestBody @Valid CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto) {
         cashierService.updateBalance(cashierUpdateBalanceRequestDto, BalanceType.EXTRA_DEBT_CREDIT);
-    }
-
-    @DeleteMapping("/{cashier-id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteCashierById(
-            @PathVariable("cashier-id") Integer cashierId) {
-        cashierService.deleteCashierById(cashierId);
     }
 }

@@ -25,6 +25,7 @@ import static com.example.demoproject2.consts.BalanceChangeType.DECREASE;
 import static com.example.demoproject2.consts.BalanceChangeType.INCREASE;
 import static com.example.demoproject2.consts.Condition.CASHIER_IS_DELETED;
 import static com.example.demoproject2.consts.Condition.CASHIER_IS_NOT_DELETED;
+import static com.example.demoproject2.consts.Status.DELETED_STATUS_VALUE;
 import static com.example.demoproject2.generated.jooq.Tables.CASHIER;
 import static com.example.demoproject2.generated.jooq.Tables.CASHIER_SPORTS_STAKE_LIMITS;
 
@@ -90,7 +91,7 @@ public class CashierRepoImpl implements CashierRepo {
     @Override
     public int deleteCashierById(Integer cashierId) {
         return dslContext.update(CASHIER)
-                .set(CASHIER.STATUS, (short) 3)
+                .set(CASHIER.STATUS, DELETED_STATUS_VALUE)
                 .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierId)))
                 .execute();
     }

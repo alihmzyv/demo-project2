@@ -47,9 +47,8 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
-    public void updateCashierStatus(CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
+    public void updateCashierStatus(Integer cashierId, CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
         log.info(cashierUpdateStatusRequestDto.getComment()); //TODO: log to db
-        Integer cashierId = cashierUpdateStatusRequestDto.getCashierId();
         Short newStatus = cashierUpdateStatusRequestDto.getNewStatus();
         cashierRepo.updateCashierStatus(cashierId, newStatus);
     }

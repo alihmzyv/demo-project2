@@ -41,14 +41,15 @@ public class AgentController {
     @PostMapping
     public AgentDetailedResponseDto createAgent(
             @RequestBody @Valid AgentCreateRequestDto agentCreateRequestDto) {
-        int agentInsertedId = agentService.createAgent(agentCreateRequestDto);
-        return agentService.findAgentById(agentInsertedId);
+        int insertedAgentId = agentService.createAgent(agentCreateRequestDto);
+        return agentService.findAgentById(insertedAgentId);
     }
 
-    @PatchMapping("/update-status")
+    @PatchMapping("/{agent-id}/update-status")
     public void updateAgentStatus(
+            @PathVariable("agent-id") Integer agentId,
             @RequestBody @Valid AgentStatusUpdateRequestDto agentStatusUpdateRequestDto) {
-        agentService.updateAgentStatus(agentStatusUpdateRequestDto);
+        agentService.updateAgentStatus(agentStatusUpdateRequestDto, agentId);
     }
 
     @DeleteMapping("/{agent-id}")
@@ -56,14 +57,13 @@ public class AgentController {
     public void deleteAgent(
             @PathVariable("agent-id") Integer agentId) {
         agentService.deleteAgentById(agentId);
-        log.info("Deleted agent id: {}", agentId);
     }
 
     @PostMapping("/{agent-id}")
     public CashierDetailedResponseDto createCashier(
             @PathVariable("agent-id") Integer agentId,
             @RequestBody @Valid CashierCreateRequestDto cashierCreateRequestDto) {
-        int cashierInsertedId = cashierService.createCashier(agentId, cashierCreateRequestDto);
-        return cashierService.findCashierById(cashierInsertedId);
+        int insertedCashierId = cashierService.createCashier(agentId, cashierCreateRequestDto);
+        return cashierService.findCashierById(insertedCashierId);
     }
 }
