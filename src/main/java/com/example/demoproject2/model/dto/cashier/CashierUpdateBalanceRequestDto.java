@@ -1,5 +1,7 @@
 package com.example.demoproject2.model.dto.cashier;
 
+import com.example.demoproject2.consts.BalanceChangeType;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -14,11 +16,13 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSA
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CashierSportsStakeLimitsDto {
+@ToString
+public class CashierUpdateBalanceRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
-    Short sportsId;
+    Integer cashierId;
+    @NotNull
+    BalanceChangeType balanceChangeType;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
-    BigDecimal minStake;
-    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
-    BigDecimal maxStake;
+    @Min(0)
+    BigDecimal amount;
 }

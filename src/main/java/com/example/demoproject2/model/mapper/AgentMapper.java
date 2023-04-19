@@ -2,84 +2,115 @@ package com.example.demoproject2.model.mapper;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
-import com.example.demoproject2.model.dto.agent.*;
-import com.example.demoproject2.model.dto.cashier.CashierRespDto;
+import com.example.demoproject2.generated.jooq.tables.records.CashierSportsStakeLimitsRecord;
+import com.example.demoproject2.model.dto.agent.AgentCreateRequestDto;
+import com.example.demoproject2.model.dto.agent.AgentDetailedResponseDto;
+import com.example.demoproject2.model.dto.agent.AgentResponseDto;
+import com.example.demoproject2.model.dto.agent.AgentUpdateRequestDto;
+import com.example.demoproject2.model.dto.cashier.CashierDetailedResponseDto;
 import com.example.demoproject2.model.dto.status.StatusCountDto;
-import org.jooq.Record2;
-import org.jooq.Record5;
+import com.example.demoproject2.util.JooqUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.jooq.Record;
 import org.jooq.Result;
 import org.mapstruct.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static com.example.demoproject2.generated.jooq.Tables.*;
+import static java.util.stream.Collectors.*;
 import static org.mapstruct.ReportingPolicy.WARN;
 
 
+@Slf4j
 @Mapper(componentModel = "spring", unmappedSourcePolicy = WARN)
 public abstract class AgentMapper {
-    private final CashierMapper cashierMapper;
+    @Autowired
+    JooqUtil jooqUtil;
+    @Autowired
+    CashierMapper cashierMapper;
+    @Autowired
+    CashierSportsStakesLimitsMapper cashierSportsStakesLimitsMapper;
 
-    protected AgentMapper() {
-        cashierMapper = new CashierMapperImpl();
-    }
-
-    public abstract AgentRecord toRecord(CreateAgentDto createAgentDto);
-    public abstract AgentRecord toRecord(UpdateAgentDto updateAgentDto);
-    public abstract AgentRespDto toDto(AgentRecord agentRecord);
-    public AgentDetailedRespDto toDto(Record5<AgentRecord, Integer, Integer, Integer, Integer> record) {
-        if (record == null) {
-            return null;
+    public List<AgentDetailedResponseDto> toAgentDetailedResponseDto(Result<Record> agentCashiersLimitsRecords) {
+        if (agentCashiersLimitsRecords.isEmpty()) {
+            return Collections.emptyList();
         }
-        Integer num_of_act_cashiers = record.component3();
-        Integer num_of_inact_cashiers = record.component4();
-        Integer num_of_del_cashiers = record.component5();
-        StatusCountDto actCashiers = StatusCountDto.builder()
+        //map
+        Map<AgentRecord, List<CashierRecord>> agentCashierMap = agentCashiersLimitsRecords.collect(
+                groupingBy(r -> r.into(AGENT),
+                        filtering(r -> r.get(CASHIER.ID) != null,
+                                mapping(r -> r.into(CASHIER),
+                                        toList()))));
+        log.info("agentCashierMap: {}", agentCashierMap);
+        log.info("agentCashierMap size: {}", agentCashierMap.size());
+        agentCashierMap.forEach((agentRecord, cashierRecords) -> {
+            log.info("Agent record: {}", agentRecord);
+            log.info("Cashier record: {}", cashierRecords);
+        });
+        Map<CashierRecord, List<CashierSportsStakeLimitsRecord>> cashierLimitsMap = agentCashiersLimitsRecords.collect(
+                groupingBy(r -> r.into(CASHIER),
+                        filtering(r -> r.get(CASHIER_SPORTS_STAKE_LIMITS.CASHIER_ID) != null,
+                                mapping(r -> r.into(CASHIER_SPORTS_STAKE_LIMITS),
+                                        toList()))));
+
+        List<AgentDetailedResponseDto> agentDtos = new ArrayList<>(); //result to return
+
+        //map cashier records, limits records to Cashier dto
+        agentCashierMap.forEach((agentRecord, cashierRecords) -> {
+            List<CashierDetailedResponseDto> cashierDtos = new ArrayList<>();
+            cashierRecords.forEach(cashierRecord -> {
+                List<CashierSportsStakeLimitsRecord> limitsRecords = cashierLimitsMap.getOrDefault(cashierRecord, jooqUtil.emptyResult(CASHIER_SPORTS_STAKE_LIMITS));
+                CashierDetailedResponseDto cashierDto = cashierMapper.toDto(cashierRecord, limitsRecords);
+                log.info("CashierDetailRespDto: {}", cashierDto);
+                cashierDtos.add(cashierDto);
+            });
+
+            //map agent records, cashier dtos to Agent dto
+            AgentDetailedResponseDto agentDto = toAgentDetailedResponseDto(agentRecord, cashierDtos);
+            agentDtos.add(agentDto);
+        });
+
+        return agentDtos;
+    }
+
+    public AgentDetailedResponseDto toAgentDetailedResponseDto(AgentRecord agentRecord, List<CashierDetailedResponseDto> cashierDetailedResponseDtos) {
+        StatusCountDto countActives = StatusCountDto.builder()
                 .statusId((short) 1)
-                .count(num_of_act_cashiers)
+                .count(0)
                 .build();
-        StatusCountDto inactCashiers = StatusCountDto.builder()
+        StatusCountDto countInactives = StatusCountDto.builder()
                 .statusId((short) 2)
-                .count(num_of_inact_cashiers)
+                .count(0)
                 .build();
-        StatusCountDto delCashiers = StatusCountDto.builder()
+        StatusCountDto countDeleted = StatusCountDto.builder()
                 .statusId((short) 3)
-                .count(num_of_del_cashiers)
+                .count(0)
                 .build();
-        List<StatusCountDto> cashiersStatus = List.of(actCashiers, inactCashiers, delCashiers);
-        return AgentDetailedRespDto.builder()
-                .agentDto(toDto(record.component1()))
-                .numberOfCashiers(record.component2())
-                .cashiersStatusCountDtos(cashiersStatus)
-                .build();
-    }
-
-    public List<AgentDetailedRespDto> toDto(List<Record5<AgentRecord, Integer, Integer, Integer, Integer>> allAgents) {
-        return allAgents.stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<AgentCashiersRespDto> toDto(Result<Record2<AgentRecord, CashierRecord>> allAgents) {
-        Stream<Record2<AgentRecord, CashierRecord>> agentCashiersMap = allAgents.stream();
-        return agentCashiersMap.collect(Collectors.groupingBy(Record2::component1))
-                .entrySet().stream()
-                .map(this::toDto)
-                .toList();
-    }
-
-    public AgentCashiersRespDto toDto(Map.Entry<AgentRecord, List<Record2<AgentRecord, CashierRecord>>> entry) {
-        AgentRecord agentRecord = entry.getKey();
-        List<CashierRecord> cashierRecords = entry.getValue().stream()
-                .map(Record2::component2)
-                .toList();
-        return AgentCashiersRespDto.builder()
-                .agentRespDto(toDto(agentRecord))
-                .cashiers(toDtoList(cashierRecords))
+        cashierDetailedResponseDtos.forEach(cashierDetailedResponseDto -> {
+            Short status = cashierDetailedResponseDto.getCashierResponseDto().getStatus();
+            switch (status) {
+                case 1 -> countActives.setCount(countActives.getCount() + 1);
+                case 2 -> countInactives.setCount(countInactives.getCount() + 1);
+                default -> countDeleted.setCount(countDeleted.getCount() + 1);
+            }
+        });
+        AgentResponseDto agentResponseDto = toAgentResponseDto(agentRecord);
+        int numberOfCashiers = cashierDetailedResponseDtos.size();
+        List<StatusCountDto> cashierStatusCounts = List.of(countActives, countInactives, countDeleted);
+        return AgentDetailedResponseDto.builder()
+                .agentDto(agentResponseDto)
+                .cashierRespDtos(cashierDetailedResponseDtos)
+                .numberOfCashiers(numberOfCashiers)
+                .cashiersStatusCountDtos(cashierStatusCounts)
                 .build();
     }
 
-    public abstract List<CashierRespDto> toDtoList(List<CashierRecord> cashierRecords);
+    public abstract AgentResponseDto toAgentResponseDto(AgentRecord agentRecord);
+    public abstract AgentRecord toRecord(AgentCreateRequestDto agentCreateRequestDto);
+    public abstract AgentRecord toRecord(AgentUpdateRequestDto agentUpdateRequestDto);
 }

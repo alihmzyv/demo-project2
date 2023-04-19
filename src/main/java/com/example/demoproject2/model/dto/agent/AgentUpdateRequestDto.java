@@ -15,21 +15,20 @@ import static com.example.demoproject2.consts.Validation.*;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class UpdateAgentDto {
+public class AgentUpdateRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer id;
     Integer agentCode;
     String fullName;
     String idNumber;
+    @Length(min = 10, max = 10, message = DEFAULT_VALID_VOEN_MESSAGE)
+    String voen;
     Integer cityId;
     String address;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String email;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String salesRepEmail;
-    @Length(min = 10, max = 10, message = DEFAULT_VALID_VOEN_MESSAGE)
-    String voen;
     String phone;
     String mobile;
-    Short status;
 }

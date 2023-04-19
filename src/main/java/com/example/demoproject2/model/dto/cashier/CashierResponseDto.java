@@ -11,26 +11,24 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CashierRespDto {
+public class CashierResponseDto {
     Integer id;
-    Integer agentId;
     Integer cashierCode;
-    String providerId;
     String fullName;
-    String phone;
-    String mobile;
-    Integer zoneId;
-    Integer cityId;
-    Integer regionId;
-    String address;
-    String macAddress;
+    String type;
     BigDecimal nextPermanentBalance;
     BigDecimal currentBalance;
-    BigDecimal extraDebtCredit;
     BigDecimal debtCredit;
-    BigDecimal betTicketPayoutLimit;
+    BigDecimal extraDebtCredit;
+    Integer cityId;
+    String address;
+    String mobile;
     Short status;
-    Short frozenStatus;
+    String providerId;
+    String phone;
     String email;
     String salesRepEmail;
+    Integer zoneId;
+    Integer regionId;
+    String macAddress;
 }

@@ -1,60 +1,62 @@
 package com.example.demoproject2.controller;
 
-import com.example.demoproject2.model.dto.cashier.CashierFullRespDto;
-import com.example.demoproject2.model.dto.cashier.CashierRespDto;
-import com.example.demoproject2.model.dto.cashier.CreateCashierDto;
-import com.example.demoproject2.model.dto.cashier.UpdateCashierDto;
+import com.example.demoproject2.consts.BalanceType;
+import com.example.demoproject2.model.dto.cashier.CashierDetailedResponseDto;
+import com.example.demoproject2.model.dto.cashier.CashierUpdateBalanceRequestDto;
+import com.example.demoproject2.model.dto.cashier.CashierUpdateRequestDto;
+import com.example.demoproject2.model.dto.cashier.CashierUpdateStatusRequestDto;
 import com.example.demoproject2.service.CashierService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-@RequestMapping("/api/agents/{agent-id}/cashiers")
+@RequestMapping("/api/cashiers")
 @RestController
 public class CashierController {
     CashierService cashierService;
 
-    @PostMapping("/deactivate-cashier")
-    public void deactivateCashierById(
-            @RequestParam("cashier-id") Integer cashierId) {
-        cashierService.deactivateCashierById(cashierId);
+    @PatchMapping("/update-status")
+    public void updateCashierStatus(
+            @RequestBody @Valid CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
+        cashierService.updateCashierStatus(cashierUpdateStatusRequestDto);
     }
 
-    @GetMapping("/{cashier-id}")
-    public CashierFullRespDto getCashierById(
-            @PathVariable("cashier-id") Integer cashierId) {
-        return cashierService.findCashierById(cashierId);
+    @PutMapping("/{cashier-id}")
+    public CashierDetailedResponseDto updateCashier(
+            @RequestBody @Valid CashierUpdateRequestDto cashierUpdateRequestDto) {
+        cashierService.updateCashier(cashierUpdateRequestDto);
+        return cashierService.findCashierById(cashierUpdateRequestDto.getId());
     }
 
-    @GetMapping
-    public Page<CashierRespDto> getAllCashiersByAgentId(
-            @PathVariable("agent-id") Integer agentId,
-            @ParameterObject Pageable pageable) {
-        return cashierService.findAllCashiersByAgentId(agentId, pageable);
+    @PatchMapping("/update-next-permanent-balance")
+    public void updateCashierPermanentBalance(
+            @RequestBody @Valid CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto) {
+        cashierService.updateBalance(cashierUpdateBalanceRequestDto, BalanceType.NEXT_PERMANENT_BALANCE);
     }
 
-    @PostMapping
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public CashierFullRespDto createCashier(
-            @PathVariable("agent-id") Integer agentId,
-            @RequestBody @Valid CreateCashierDto createCashierDto) {
-        return cashierService.createCashier(agentId, createCashierDto);
+    @PatchMapping("/update-current-balance")
+    public void updateCashierCurrentBalance(
+            @RequestBody @Valid CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto) {
+        cashierService.updateBalance(cashierUpdateBalanceRequestDto, BalanceType.CURRENT_BALANCE);
     }
 
-    @PutMapping
-    public CashierFullRespDto updateCashier(
-            @RequestBody @Valid UpdateCashierDto updateCashierDto) {
-        return cashierService.updateCashier(updateCashierDto);
+    @PatchMapping("/update-debt-credit")
+    public void updateDebtCredit(
+            @RequestBody @Valid CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto) {
+        cashierService.updateBalance(cashierUpdateBalanceRequestDto, BalanceType.DEBT_CREDIT);
+    }
+
+    @PatchMapping("/update-extra-debt-credit")
+    public void updateExtraDebtCredit(
+            @RequestBody @Valid CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto) {
+        cashierService.updateBalance(cashierUpdateBalanceRequestDto, BalanceType.EXTRA_DEBT_CREDIT);
     }
 
     @DeleteMapping("/{cashier-id}")

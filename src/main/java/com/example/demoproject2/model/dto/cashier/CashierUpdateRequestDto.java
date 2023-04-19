@@ -1,13 +1,13 @@
 package com.example.demoproject2.model.dto.cashier;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
+import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_FROZEN_STATUS_MESSAGE;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSA
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class UpdateCashierDto {
+public class CashierUpdateRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer id;
     Integer cashierCode;
@@ -24,19 +24,16 @@ public class UpdateCashierDto {
     String fullName;
     String phone;
     String mobile;
+    String email;
+    String salesRepEmail;
     Integer zoneId;
     Integer cityId;
     Integer regionId;
     String address;
     String macAddress;
-    BigDecimal nextPermanentBalance;
-    BigDecimal currentBalance;
-    BigDecimal extraDebtCredit;
-    BigDecimal debtCredit;
-    BigDecimal betTicketPayoutLimit;
-    Short status;
+    @Min(value = 1, message = DEFAULT_VALID_FROZEN_STATUS_MESSAGE)
+    @Max(value = 2, message = DEFAULT_VALID_FROZEN_STATUS_MESSAGE)
     Short frozenStatus;
-    String email;
-    String salesRepEmail;
-    List<CashierSportsStakeLimitsDto> cashierSportsStakeLimits;
+    @Size(min = 1)
+    List<CashierSportsStakeLimitsRequestDto> cashierSportsStakeLimits;
 }
