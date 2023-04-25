@@ -83,4 +83,13 @@ public class UserServiceImpl implements UserService {
         List<UserMenuRecord> userMenuRecords = userMapper.toRecord(menuRoleUpdateRequestDtos);
         userRepo.updateUser(userMenuRecords);
     }
+
+    @Override
+    public UserDetailedResponseDto findUserByUsername(String username) {
+        Result<Record> userRecord = userRepo.findUserByUsername(username);
+        if (userRecord.isEmpty()) {
+            throw new IllegalArgumentException(String.format("User not found with username=%s", username));
+        }
+        return userMapper.toDto(userRecord).get(0);
+    }
 }

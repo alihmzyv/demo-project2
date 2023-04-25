@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.example.demoproject2.generated.jooq.Keys.USER_ID_MENU_ID_UNIQUE;
 import static com.example.demoproject2.generated.jooq.Tables.USERS;
@@ -38,9 +39,12 @@ public class UserRepoImpl implements UserRepo {
                     .returning()
                     .fetchOne();
             insertedUserId[0] = usersRecordInserted.getId();
-            Long userId = usersRecordInserted.getId();
-            userMenuRecords.forEach(userMenuRecord -> userMenuRecord.setUserId(userId));
-            ctx.dsl().batchInsert(userMenuRecords).execute();
+            Optional.ofNullable(userMenuRecords)
+                    .ifPresent(userMenuRecords1 -> {
+                        Long userId = usersRecordInserted.getId();
+                        userMenuRecords.forEach(userMenuRecord -> userMenuRecord.setUserId(userId));
+                        ctx.dsl().batchInsert(userMenuRecords).execute();
+                    });
         });
         return insertedUserId[0];
     }
@@ -107,5 +111,15 @@ public class UserRepoImpl implements UserRepo {
                 .toList();
         dslContext.batch(queries)
                 .execute();
+    }
+
+    @Override
+    public Result<Record> findUserByUsername(String username) {
+        return dslContext.select()
+                .from(USERS)
+                .leftJoin(USER_MENU)
+                .on(USER_MENU.USER_ID.eq(USERS.ID))
+                .where(USERS.USERNAME.eq(username))
+                .fetch();
     }
 }

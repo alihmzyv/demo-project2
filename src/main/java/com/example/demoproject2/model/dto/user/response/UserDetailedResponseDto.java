@@ -6,12 +6,9 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Data
 public class UserDetailedResponseDto {
     UserBasicResponseDto userBasicResponseDto;
     List<MenuRoleDto> menuRoleDtos;

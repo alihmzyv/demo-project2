@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_package = "com.example.demoproject2.proto";
+option java_multiple_files = true;
+
+message CreateLogRequest {
+  int32 operation_service = 1;
+  int32 operation_type = 2;
+  int64 user_id = 3;
+  int64 cashier_code = 4;
+  string json = 5;
+}
+
+message LogResponse {
+  int32 operation_service = 1;
+  int32 operation_type = 2;
+  int64 user_id = 3;
+  int64 cashier_code = 4;
+  string json = 5;
+  int64 created_at = 6;
+}
+
+service LogService {
+  rpc createLog(CreateLogRequest) returns (LogResponse) {};
+}

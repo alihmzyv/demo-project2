@@ -10,12 +10,8 @@ import lombok.experimental.FieldDefaults;
 import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
 import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_CASHIER_STATUS_MESSAGE;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Data
 public class CashierUpdateStatusRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer cashierId;

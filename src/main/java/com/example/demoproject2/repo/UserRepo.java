@@ -24,4 +24,6 @@ public interface UserRepo {
     int deleteUserById(Long userId);
 
     void updateUser(List<UserMenuRecord> userMenuRecords);
+
+    Result<Record> findUserByUsername(String username);
 }

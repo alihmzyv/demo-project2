@@ -5,11 +5,17 @@ import com.example.demoproject2.model.dto.agent.req.AgentCreateRequestDto;
 import com.example.demoproject2.model.dto.agent.req.AgentStatusUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.req.AgentUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.resp.AgentDetailedResponseDto;
+import com.example.demoproject2.model.dto.user.response.UserDetailedResponseDto;
 import com.example.demoproject2.model.mapper.AgentMapper;
+import com.example.demoproject2.proto.CreateLogRequest;
 import com.example.demoproject2.repo.AgentRepo;
 import com.example.demoproject2.service.AgentService;
+import com.example.demoproject2.service.LogGrpcServiceClient;
+import com.example.demoproject2.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record;
@@ -19,6 +25,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.example.demoproject2.consts.OperationService.AGENT_SERVICE;
+import static com.example.demoproject2.consts.OperationType.CREATE;
+
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Slf4j
@@ -26,6 +35,9 @@ import java.util.List;
 public class AgentServiceImpl implements AgentService {
     AgentMapper agentMapper;
     AgentRepo agentRepo;
+    LogGrpcServiceClient logGrpcServiceClient;
+    ObjectMapper objectMapper;
+    UserService userService;
 
     @Override
     public List<AgentDetailedResponseDto> findAllAgents(Pageable pageable) {
@@ -41,10 +53,19 @@ public class AgentServiceImpl implements AgentService {
         } else return agentMapper.toDto(agentById).get(0); //there can be one agent only by the id
     }
 
+    @SneakyThrows
     @Override
-    public int createAgent(AgentCreateRequestDto agentCreateRequestDto) {
+    public int createAgent(String username, AgentCreateRequestDto agentCreateRequestDto) {
         AgentRecord agentRecord = agentMapper.toRecord(agentCreateRequestDto);
         AgentRecord agentRecordInserted = agentRepo.insertAgent(agentRecord);
+        UserDetailedResponseDto userDetailedResponseDto = userService.findUserByUsername(username);
+        CreateLogRequest logRequest = CreateLogRequest.newBuilder()
+                .setUserId(userDetailedResponseDto.getUserBasicResponseDto().getId())
+                .setOperationService(AGENT_SERVICE.ordinal())
+                .setOperationType(CREATE.ordinal())
+                .setJson(objectMapper.writeValueAsString(userDetailedResponseDto))
+                .build();
+        logGrpcServiceClient.createLog(logRequest);
         return agentRecordInserted.getId();
     }
 

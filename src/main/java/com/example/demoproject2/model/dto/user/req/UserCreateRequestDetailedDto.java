@@ -9,13 +9,7 @@ import java.util.List;
 
 import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
 @Data
 public class UserCreateRequestDetailedDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)

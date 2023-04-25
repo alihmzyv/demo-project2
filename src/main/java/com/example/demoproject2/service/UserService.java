@@ -23,4 +23,6 @@ public interface UserService {
     void deleteUserById(Long userId);
 
     void updateUserPermissions(List<MenuRoleUpdateRequestDto> menuRoleUpdateRequestDtos);
+
+    UserDetailedResponseDto findUserByUsername(String username);
 }

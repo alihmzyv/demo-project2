@@ -13,7 +13,7 @@ public interface AgentService {
 
     AgentDetailedResponseDto findAgentById(Integer agentId);
 
-    int createAgent(AgentCreateRequestDto agentCreateRequestDto);
+    int createAgent(String username, AgentCreateRequestDto agentCreateRequestDto);
 
     void deleteAgentById(Integer agentId);
 

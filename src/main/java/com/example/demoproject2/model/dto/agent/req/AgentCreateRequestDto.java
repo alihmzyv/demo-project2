@@ -1,7 +1,9 @@
 package com.example.demoproject2.model.dto.agent.req;
 
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
@@ -9,13 +11,9 @@ import java.math.BigDecimal;
 
 import static com.example.demoproject2.consts.Validation.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
+@NoArgsConstructor(force = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Data
 public class AgentCreateRequestDto {
     @NotBlank(message = DEFAULT_NOT_BLANK_MESSAGE)
     String fullName;

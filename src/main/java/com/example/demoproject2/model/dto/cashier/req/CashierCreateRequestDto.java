@@ -11,13 +11,8 @@ import java.util.List;
 import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
 import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MESSAGE;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
+@Data
 public class CashierCreateRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer cashierCode;

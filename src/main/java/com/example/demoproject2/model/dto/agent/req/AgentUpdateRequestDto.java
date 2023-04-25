@@ -9,13 +9,8 @@ import org.hibernate.validator.constraints.Length;
 import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MESSAGE;
 import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_VOEN_MESSAGE;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
+@Data
 public class AgentUpdateRequestDto {
     @NotNull
     Integer id;

@@ -11,9 +11,10 @@ import com.example.demoproject2.service.CashierService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.annotations.ParameterObject;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,17 @@ public class AgentController {
     AgentService agentService;
     CashierService cashierService;
 
+
+    @SneakyThrows
+    @PostMapping
+    public AgentDetailedResponseDto createAgent(
+            @RequestBody @Valid AgentCreateRequestDto agentCreateRequestDto,
+            @RequestHeader("Authorization") String username) {
+        int insertedAgentId = agentService.createAgent(username, agentCreateRequestDto);
+        return agentService.findAgentById(insertedAgentId);
+    }
+
+    @SneakyThrows
     @GetMapping
     public List<AgentDetailedResponseDto> getAllAgents(
             @ParameterObject Pageable pageable) {
@@ -39,13 +51,6 @@ public class AgentController {
     public AgentDetailedResponseDto getAgentById(
             @PathVariable("agent-id") Integer agentId) {
         return agentService.findAgentById(agentId);
-    }
-
-    @PostMapping
-    public AgentDetailedResponseDto createAgent(
-            @RequestBody @Valid AgentCreateRequestDto agentCreateRequestDto) {
-        int insertedAgentId = agentService.createAgent(agentCreateRequestDto);
-        return agentService.findAgentById(insertedAgentId);
     }
 
     @PutMapping

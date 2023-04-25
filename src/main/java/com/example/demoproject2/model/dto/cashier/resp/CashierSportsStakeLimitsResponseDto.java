@@ -5,12 +5,9 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Data
+@NoArgsConstructor(force = true)
 public class CashierSportsStakeLimitsResponseDto {
     Short sportsId;
     BigDecimal minStake;

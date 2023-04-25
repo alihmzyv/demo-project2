@@ -1,18 +1,14 @@
 package com.example.demoproject2.model.dto.permission;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
+@Data
 public class MenuRoleDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Long menuId;
