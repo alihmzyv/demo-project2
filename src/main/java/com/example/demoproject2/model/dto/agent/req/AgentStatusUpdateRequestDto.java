@@ -10,12 +10,8 @@ import lombok.experimental.FieldDefaults;
 import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
 import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_AGENT_STATUS_MESSAGE;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Data
 public class AgentStatusUpdateRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer id;

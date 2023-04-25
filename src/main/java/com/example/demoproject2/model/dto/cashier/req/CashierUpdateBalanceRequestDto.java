@@ -10,13 +10,8 @@ import java.math.BigDecimal;
 
 import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Data
 public class CashierUpdateBalanceRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer cashierId;

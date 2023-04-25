@@ -5,12 +5,9 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Data
 public class CashierDetailedResponseDto {
     CashierResponseDto cashierResponseDto;
     List<CashierSportsStakeLimitsResponseDto> stakeLimits;

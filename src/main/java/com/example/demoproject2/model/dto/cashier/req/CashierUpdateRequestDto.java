@@ -11,13 +11,8 @@ import java.util.List;
 
 import static com.example.demoproject2.consts.Validation.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Data
 public class CashierUpdateRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer id;

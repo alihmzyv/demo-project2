@@ -5,12 +5,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Data
 public class CashierResponseDto {
     Integer id;
     Integer cashierCode;
