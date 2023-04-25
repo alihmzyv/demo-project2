@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
         if (userById.isEmpty()) {
             throw new IllegalArgumentException(String.format("User not found with id=%d", userId));
         }
-        return userMapper.toDto(userById).get(0);
+        return userMapper.toDto(userById).get(0); //there can be only one user by the id
     }
 
     @Override

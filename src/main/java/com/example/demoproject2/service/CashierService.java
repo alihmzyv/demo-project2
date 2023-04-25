@@ -9,14 +9,16 @@ import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDt
 
 public interface CashierService {
     int createCashier(Integer agentId, CashierCreateRequestDto cashierCreateRequestDto);
+
     void deleteCashierById(Integer cashierId);
 
-    void updateCashierStatus(Integer cashierId, CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto);
+    void updateCashierStatus(CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto);
 
     CashierDetailedResponseDto findCashierById(int cashierId);
 
     void updateCashier(CashierUpdateRequestDto cashierUpdateRequestDto);
 
     void updateBalance(CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto, BalanceType balanceType);
+
     void requiresCashierExistsById(Integer cashierId);
 }

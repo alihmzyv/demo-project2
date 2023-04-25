@@ -3,6 +3,7 @@ package com.example.demoproject2.repo.impl;
 import com.example.demoproject2.generated.jooq.tables.records.UserMenuRecord;
 import com.example.demoproject2.generated.jooq.tables.records.UsersRecord;
 import com.example.demoproject2.repo.UserRepo;
+import com.example.demoproject2.util.JooqUtil;
 import com.example.demoproject2.util.PageUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.example.demoproject2.generated.jooq.Keys.USER_ID_MENU_ID_UNIQUE;
 import static com.example.demoproject2.generated.jooq.Tables.USERS;
@@ -28,16 +28,18 @@ import static com.example.demoproject2.generated.jooq.Tables.USER_MENU;
 @Repository
 public class UserRepoImpl implements UserRepo {
     DSLContext dslContext;
+
     @Override
     public long insertUser(UsersRecord usersRecord, List<UserMenuRecord> userMenuRecords) {
         final Long[] insertedUserId = new Long[1];
-        dslContext.transaction(ctx -> {;
+        dslContext.transaction(ctx -> {
             UsersRecord usersRecordInserted = ctx.dsl().insertInto(USERS)
                     .set(usersRecord)
                     .returning()
                     .fetchOne();
             insertedUserId[0] = usersRecordInserted.getId();
-            userMenuRecords.forEach(userMenuRecord -> userMenuRecord.setUserId(insertedUserId[0]));
+            Long userId = usersRecordInserted.getId();
+            userMenuRecords.forEach(userMenuRecord -> userMenuRecord.setUserId(userId));
             ctx.dsl().batchInsert(userMenuRecords).execute();
         });
         return insertedUserId[0];
@@ -78,11 +80,9 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public void updateUser(UsersRecord usersRecord) {
-        Map<String, Object> nonNullFields = usersRecord.fieldStream()
-                .filter(field -> field.getValue(usersRecord) != null)
-                .collect(Collectors.toMap(Field::getName, field -> field.getValue(usersRecord)));
+        Map<String, Object> notNullFields = JooqUtil.findNotNullFields(usersRecord);
         dslContext.update(USERS)
-                .set(nonNullFields)
+                .set(notNullFields)
                 .where(USERS.ID.eq(usersRecord.getId()))
                 .execute();
     }

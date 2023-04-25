@@ -1,10 +1,10 @@
 package com.example.demoproject2.controller;
 
 import com.example.demoproject2.consts.BalanceType;
-import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
 import com.example.demoproject2.model.dto.cashier.req.CashierUpdateBalanceRequestDto;
 import com.example.demoproject2.model.dto.cashier.req.CashierUpdateRequestDto;
 import com.example.demoproject2.model.dto.cashier.req.CashierUpdateStatusRequestDto;
+import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
 import com.example.demoproject2.service.CashierService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -22,14 +22,13 @@ import org.springframework.web.bind.annotation.*;
 public class CashierController {
     CashierService cashierService;
 
-    @PatchMapping("/{cashier-id}/update-status")
+    @PatchMapping("/update-status")
     public void updateCashierStatus(
-            @PathVariable("cashier-id") Integer cashierId,
             @RequestBody @Valid CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
-        cashierService.updateCashierStatus(cashierId, cashierUpdateStatusRequestDto);
+        cashierService.updateCashierStatus(cashierUpdateStatusRequestDto);
     }
 
-    @PutMapping("/{cashier-id}")
+    @PutMapping
     public CashierDetailedResponseDto updateCashier(
             @RequestBody @Valid CashierUpdateRequestDto cashierUpdateRequestDto) {
         cashierService.updateCashier(cashierUpdateRequestDto);

@@ -4,9 +4,9 @@ import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierRecord;
 import com.example.demoproject2.generated.jooq.tables.records.CashierSportsStakeLimitsRecord;
 import com.example.demoproject2.model.dto.agent.req.AgentCreateRequestDto;
+import com.example.demoproject2.model.dto.agent.req.AgentUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.resp.AgentDetailedResponseDto;
 import com.example.demoproject2.model.dto.agent.resp.AgentResponseDto;
-import com.example.demoproject2.model.dto.agent.req.AgentUpdateRequestDto;
 import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
 import com.example.demoproject2.model.dto.status.resp.StatusCountRespDto;
 import com.example.demoproject2.util.JooqUtil;
@@ -105,6 +105,8 @@ public abstract class AgentMapper {
     }
 
     public abstract AgentResponseDto toDto(AgentRecord agentRecord);
+
     public abstract AgentRecord toRecord(AgentCreateRequestDto agentCreateRequestDto);
+
     public abstract AgentRecord toRecord(AgentUpdateRequestDto agentUpdateRequestDto);
 }

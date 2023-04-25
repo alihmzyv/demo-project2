@@ -2,9 +2,9 @@ package com.example.demoproject2.service.impl;
 
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
 import com.example.demoproject2.model.dto.agent.req.AgentCreateRequestDto;
+import com.example.demoproject2.model.dto.agent.req.AgentStatusUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.req.AgentUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.resp.AgentDetailedResponseDto;
-import com.example.demoproject2.model.dto.agent.req.AgentStatusUpdateRequestDto;
 import com.example.demoproject2.model.mapper.AgentMapper;
 import com.example.demoproject2.repo.AgentRepo;
 import com.example.demoproject2.service.AgentService;

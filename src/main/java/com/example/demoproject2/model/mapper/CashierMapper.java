@@ -54,6 +54,8 @@ public abstract class CashierMapper {
     }
 
     public abstract CashierResponseDto toDto(CashierRecord cashierRecord);
+
     public abstract CashierRecord toRecord(CashierCreateRequestDto cashierCreateRequestDto);
+
     public abstract CashierRecord toRecord(CashierUpdateRequestDto cashierUpdateRequestDto);
 }

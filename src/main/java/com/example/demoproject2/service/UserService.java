@@ -11,7 +11,9 @@ import java.util.List;
 
 public interface UserService {
     long createUser(UserCreateRequestDetailedDto userCreateRequestBasicDto);
+
     UserDetailedResponseDto findUserById(Long userId);
+
     void requiresUsernameAndEmailIsUnique(UserCreateRequestBasicDto userCreateRequestBasicDto);
 
     List<UserDetailedResponseDto> findAllUsers(Pageable pageable);

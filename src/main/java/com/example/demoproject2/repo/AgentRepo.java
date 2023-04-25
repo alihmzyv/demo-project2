@@ -9,14 +9,19 @@ public interface AgentRepo {
     AgentRecord insertAgent(AgentRecord agentRecord);
 
     AgentRecord updateAgent(AgentRecord agentRecord);
+
     Result<Record> findAgentById(Integer agentId);
+
     Result<Record> findAllAgents(Pageable pageable);
+
     int deleteAgentById(Integer agentId);
 
     boolean agentExistsById(Integer agentId);
+
     int countActiveCashiers(Integer agentId);
 
     void updateAgentStatus(Integer agentId, Short newStatus);
+
     void updateCashiersStatusByAgentId(Integer agentId, Short newStatus);
 
     void updateAgentStatus(Integer agentId);

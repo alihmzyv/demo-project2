@@ -37,7 +37,8 @@ public class CashierCreateRequestDto {
     String macAddress;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     BigDecimal nextPermanentBalance;
-    List<CashierSportsStakeLimitsRequestDto> cashierSportsStakeLimitDtos;
+    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
+    BigDecimal currentBalance;
     BigDecimal extraDebtCredit;
     BigDecimal debtCredit;
     BigDecimal betTicketPayoutLimit;
@@ -45,4 +46,5 @@ public class CashierCreateRequestDto {
     String email;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String salesRepEmail;
+    List<CashierSportsStakeLimitsRequestDto> cashierSportsStakeLimitDtos;
 }

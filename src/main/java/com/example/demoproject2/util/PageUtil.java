@@ -37,7 +37,7 @@ public class PageUtil {
         else return tableField.desc();
     }
 
-    public static  <R extends TableRecord<R>> Collection<SortField<?>> getOrderByFields(Table<R> table, Sort sortSpecification) {
+    public static <R extends TableRecord<R>> Collection<SortField<?>> getOrderByFields(Table<R> table, Sort sortSpecification) {
         Collection<SortField<?>> querySortFields = new ArrayList<>();
 
         if (sortSpecification == null) {

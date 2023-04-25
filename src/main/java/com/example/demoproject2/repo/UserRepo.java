@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface UserRepo {
-    long insertUser(UsersRecord usersRecord, List<UserMenuRecord>userMenuRecords);
+    long insertUser(UsersRecord usersRecord, List<UserMenuRecord> userMenuRecords);
 
     boolean userExistsByUsername(String username);
 

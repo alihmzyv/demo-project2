@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.example.demoproject2.generated.jooq.Tables.CASHIER;
-
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Slf4j
@@ -40,18 +38,19 @@ public class CashierServiceImpl implements CashierService {
         CashierRecord cashierRecord = cashierMapper.toRecord(cashierCreateRequestDto);
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierSportsStakesLimitsMapper.toRecord(cashierCreateRequestDto.getCashierSportsStakeLimitDtos());
         CashierRecord cashierRecordInserted = cashierRepo.insertCashier(agentId, cashierRecord, stakeLimitsRecords);
-        Result<Record> cashierInserted = cashierRepo.findCashierById(cashierRecordInserted.getId());
-        return cashierInserted.get(0).getValue(CASHIER.ID);
+        return cashierRecordInserted.getId();
     }
 
     @Override
     public void deleteCashierById(Integer cashierId) {
         int deletedRows = cashierRepo.deleteCashierById(cashierId);
-        if (deletedRows == 0) throw new IllegalArgumentException(String.format("Cashier not found with id: %d", cashierId));
+        if (deletedRows == 0)
+            throw new IllegalArgumentException(String.format("Cashier not found with id: %d", cashierId));
     }
 
     @Override
-    public void updateCashierStatus(Integer cashierId, CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
+    public void updateCashierStatus(CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
+        Integer cashierId = cashierUpdateStatusRequestDto.getCashierId();
         requiresCashierExistsById(cashierId);
         log.info(cashierUpdateStatusRequestDto.getComment()); //TODO: log to db
         Short newStatus = cashierUpdateStatusRequestDto.getNewStatus();

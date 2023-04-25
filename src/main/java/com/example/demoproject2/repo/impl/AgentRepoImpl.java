@@ -3,6 +3,7 @@ package com.example.demoproject2.repo.impl;
 import com.example.demoproject2.consts.Status;
 import com.example.demoproject2.generated.jooq.tables.records.AgentRecord;
 import com.example.demoproject2.repo.AgentRepo;
+import com.example.demoproject2.util.JooqUtil;
 import com.example.demoproject2.util.PageUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.demoproject2.consts.Condition.*;
 import static com.example.demoproject2.consts.Status.DELETED_STATUS_VALUE;
@@ -68,12 +68,10 @@ public class AgentRepoImpl implements AgentRepo {
 
     @Override
     public AgentRecord updateAgent(AgentRecord agentRecord) {
-        Map<String, Object> nonNullFields = agentRecord.fieldStream()
-                .filter(field -> field.getValue(agentRecord) != null)
-                .collect(Collectors.toMap(Field::getName, field -> field.getValue(agentRecord)));
+        Map<String, Object> notNullFields = JooqUtil.findNotNullFields(agentRecord);
         return dslContext.update(AGENT)
-                .set(nonNullFields)
-                .where(AGENT_IS_DELETED.isFalse().and(AGENT.ID.eq(agentRecord.getId())))
+                .set(notNullFields)
+                .where(AGENT_IS_NOT_DELETED.and(AGENT.ID.eq(agentRecord.getId())))
                 .returning()
                 .fetchOne();
     }
@@ -82,7 +80,7 @@ public class AgentRepoImpl implements AgentRepo {
     public int deleteAgentById(Integer agentId) {
         return dslContext.update(AGENT)
                 .set(AGENT.STATUS, DELETED_STATUS_VALUE)
-                .where(AGENT_IS_DELETED.isFalse().and(AGENT.ID.eq(agentId)))
+                .where(AGENT_IS_NOT_DELETED.and(AGENT.ID.eq(agentId)))
                 .execute();
     }
 
@@ -94,11 +92,11 @@ public class AgentRepoImpl implements AgentRepo {
     @Override
     public int countActiveCashiers(Integer agentId) {
         return Optional.ofNullable(dslContext.select(count())
-                .from(AGENT)
-                .leftJoin(CASHIER).on(CASHIER.AGENT_ID.eq(agentId))
-                .where(CASHIER_ACTIVE)
-                .groupBy(CASHIER.STATUS)
-                .fetchOne())
+                        .from(AGENT)
+                        .leftJoin(CASHIER).on(CASHIER.AGENT_ID.eq(AGENT.ID))
+                        .where(CASHIER_ACTIVE.and(AGENT.ID.eq(agentId)))
+                        .groupBy(CASHIER.STATUS)
+                        .fetchOne())
                 .map(Record1::component1)
                 .orElse(0);
     }

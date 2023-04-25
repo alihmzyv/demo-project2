@@ -7,7 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import static com.example.demoproject2.consts.Validation.*;
+import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
+import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_CASHIER_STATUS_MESSAGE;
 
 @Getter
 @Setter
@@ -16,6 +17,8 @@ import static com.example.demoproject2.consts.Validation.*;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CashierUpdateStatusRequestDto {
+    @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
+    Integer cashierId;
     @Min(value = 1, message = DEFAULT_VALID_CASHIER_STATUS_MESSAGE)
     @Max(value = 3, message = DEFAULT_VALID_CASHIER_STATUS_MESSAGE)
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)

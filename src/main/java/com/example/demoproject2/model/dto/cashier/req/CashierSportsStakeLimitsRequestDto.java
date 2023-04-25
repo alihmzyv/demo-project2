@@ -8,7 +8,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
-import static com.example.demoproject2.consts.Validation.*;
+import static com.example.demoproject2.consts.Validation.DEFAULT_NOT_BLANK_MESSAGE;
+import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_SPORTS_TYPE_ID_MESSAGE;
 
 @Getter
 @Setter

@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.demoproject2.consts.BalanceChangeType.DECREASE;
 import static com.example.demoproject2.consts.BalanceChangeType.INCREASE;
@@ -48,7 +47,8 @@ public class CashierRepoImpl implements CashierRepo {
                             .returning()
                             .fetchOne())
                     .orElseThrow(() -> new RuntimeException("Something went wrong"));
-            stakeLimitsRecords.forEach(stakeLimitsRecord -> stakeLimitsRecord.setCashierId(cashierRecordInserted[0].getId()));
+            Integer cashierId = cashierRecordInserted[0].getId();
+            stakeLimitsRecords.forEach(stakeLimitsRecord -> stakeLimitsRecord.setCashierId(cashierId));
             ctx.dsl().batchInsert(stakeLimitsRecords).execute();
         });
         return cashierRecordInserted[0];
@@ -66,19 +66,19 @@ public class CashierRepoImpl implements CashierRepo {
 
     @Override
     public CashierRecord updateCashier(CashierRecord cashierRecord, List<CashierSportsStakeLimitsRecord> cashierSportsStakeLimitsRecords) {
-        Map<String, Object> nonNullFields = cashierRecord.fieldStream()
-                .filter(field -> field.getValue(cashierRecord) != null)
-                .collect(Collectors.toMap(Field::getName, field -> field.getValue(cashierRecord)));
+        Map<String, Object> notNullFields = JooqUtil.findNotNullFields(cashierRecord);
         final CashierRecord[] cashierRecordUpdated = new CashierRecord[1];
         dslContext.transaction(ctx -> {
             cashierRecordUpdated[0] = Optional.ofNullable(ctx.dsl().update(CASHIER)
-                    .set(nonNullFields)
-                    .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierRecord.getId())))
-                    .returning()
-                    .fetchOne())
+                            .set(notNullFields)
+                            .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierRecord.getId())))
+                            .returning()
+                            .fetchOne())
                     .orElseThrow(() -> new RuntimeException("Something went wrong"));
+            Integer cashierId = cashierRecord.getId();
+            cashierSportsStakeLimitsRecords.forEach(cashierSportsStakeLimitsRecord -> cashierSportsStakeLimitsRecord.setCashierId(cashierId));
             ctx.dsl().batched(config -> cashierSportsStakeLimitsRecords
-                    .forEach(cashierSportsStakeLimitsRecord -> ctx.dsl().update(CASHIER_SPORTS_STAKE_LIMITS)
+                    .forEach(cashierSportsStakeLimitsRecord -> config.dsl().update(CASHIER_SPORTS_STAKE_LIMITS)
                             .set(CASHIER_SPORTS_STAKE_LIMITS.SPORTS_ID, cashierSportsStakeLimitsRecord.getSportsId())
                             .set(CASHIER_SPORTS_STAKE_LIMITS.MIN_STAKE, cashierSportsStakeLimitsRecord.getMinStake())
                             .set(CASHIER_SPORTS_STAKE_LIMITS.MAX_STAKE, cashierSportsStakeLimitsRecord.getMaxStake())
@@ -92,7 +92,7 @@ public class CashierRepoImpl implements CashierRepo {
     public int deleteCashierById(Integer cashierId) {
         return dslContext.update(CASHIER)
                 .set(CASHIER.STATUS, DELETED_STATUS_VALUE)
-                .where(CASHIER_IS_DELETED.isFalse().and(CASHIER.ID.eq(cashierId)))
+                .where(CASHIER_IS_NOT_DELETED.and(CASHIER.ID.eq(cashierId)))
                 .execute();
     }
 
@@ -100,7 +100,7 @@ public class CashierRepoImpl implements CashierRepo {
     public void updateCashierStatus(Integer cashierId, Short newStatus) {
         int updatedCashiers = dslContext.update(CASHIER)
                 .set(CASHIER.STATUS, newStatus)
-                .where(CASHIER.ID.eq(cashierId).and(CASHIER_IS_NOT_DELETED))
+                .where(CASHIER.ID.eq(cashierId))
                 .execute();
         if (updatedCashiers != 0) {
             Integer agentId = findAgentIdByCashierId(cashierId);
@@ -143,10 +143,10 @@ public class CashierRepoImpl implements CashierRepo {
                         throw new IllegalArgumentException(String.format("Balance change type is incorrect: %s", balanceChangeType));
                     }
                     updateBalance(cashierId, field, updatedAmount); //set the balance to the updatedAmount
-        }, () -> {
+                }, () -> {
                     //balance field not found
-            throw new IllegalArgumentException(String.format("Balance type is incorrect: %s", balanceType));
-        });
+                    throw new IllegalArgumentException(String.format("Balance type is incorrect: %s", balanceType));
+                });
     }
 
     @Override

@@ -12,6 +12,8 @@ import static org.mapstruct.ReportingPolicy.WARN;
 @Mapper(componentModel = "spring", unmappedSourcePolicy = WARN)
 public abstract class CashierSportsStakesLimitsMapper {
     public abstract CashierSportsStakeLimitsResponseDto toDto(CashierSportsStakeLimitsRecord cashierSportsStakeLimitsRecord);
+
     public abstract List<CashierSportsStakeLimitsResponseDto> toDto(List<CashierSportsStakeLimitsRecord> cashierSportsStakeLimitsRecords);
+
     public abstract List<CashierSportsStakeLimitsRecord> toRecord(List<CashierSportsStakeLimitsRequestDto> cashierSportsStakeLimitsRequestDtoList);
 }
