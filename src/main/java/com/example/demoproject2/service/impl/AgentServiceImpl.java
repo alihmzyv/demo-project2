@@ -5,7 +5,6 @@ import com.example.demoproject2.model.dto.agent.req.AgentCreateRequestDto;
 import com.example.demoproject2.model.dto.agent.req.AgentStatusUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.req.AgentUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.resp.AgentDetailedResponseDto;
-import com.example.demoproject2.model.dto.user.response.UserDetailedResponseDto;
 import com.example.demoproject2.model.mapper.AgentMapper;
 import com.example.demoproject2.proto.CreateLogRequest;
 import com.example.demoproject2.repo.AgentRepo;
@@ -58,9 +57,8 @@ public class AgentServiceImpl implements AgentService {
     public int createAgent(String username, AgentCreateRequestDto agentCreateRequestDto) {
         AgentRecord agentRecord = agentMapper.toRecord(agentCreateRequestDto);
         AgentRecord agentRecordInserted = agentRepo.insertAgent(agentRecord);
-        UserDetailedResponseDto userDetailedResponseDto = userService.findUserByUsername(username);
         CreateLogRequest logRequest = CreateLogRequest.newBuilder()
-                .setUserId(userDetailedResponseDto.getUserBasicResponseDto().getId())
+                .setUsername(username)
                 .setOperationService(AGENT_SERVICE.ordinal())
                 .setOperationType(CREATE.ordinal())
                 .setJson(objectMapper.writeValueAsString(agentMapper.toDto(agentRecordInserted)))

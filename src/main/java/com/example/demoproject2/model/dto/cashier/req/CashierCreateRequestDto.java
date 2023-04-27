@@ -16,6 +16,7 @@ import static com.example.demoproject2.consts.Validation.DEFAULT_VALID_EMAIL_MES
 public class CashierCreateRequestDto {
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     Integer cashierCode;
+    String providerId;
     String provider;
     @NotNull(message = DEFAULT_NOT_BLANK_MESSAGE)
     String fullName;
@@ -37,6 +38,8 @@ public class CashierCreateRequestDto {
     BigDecimal extraDebtCredit;
     BigDecimal debtCredit;
     BigDecimal betTicketPayoutLimit;
+    Short status;
+    Short frozenStatus;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)
     String email;
     @Email(message = DEFAULT_VALID_EMAIL_MESSAGE)

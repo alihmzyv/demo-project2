@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor(force = true)
 public class CashierResponseDto {
     Integer id;
+    Integer agentId;
     Integer cashierCode;
     String fullName;
     String type;
@@ -17,10 +18,12 @@ public class CashierResponseDto {
     BigDecimal currentBalance;
     BigDecimal debtCredit;
     BigDecimal extraDebtCredit;
+    BigDecimal betTicketPayoutLimit;
     Integer cityId;
     String address;
     String mobile;
     Short status;
+    Short frozenStatus;
     String providerId;
     String phone;
     String email;
