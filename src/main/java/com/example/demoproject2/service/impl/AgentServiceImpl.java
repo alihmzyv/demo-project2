@@ -63,7 +63,7 @@ public class AgentServiceImpl implements AgentService {
                 .setUserId(userDetailedResponseDto.getUserBasicResponseDto().getId())
                 .setOperationService(AGENT_SERVICE.ordinal())
                 .setOperationType(CREATE.ordinal())
-                .setJson(objectMapper.writeValueAsString(userDetailedResponseDto))
+                .setJson(objectMapper.writeValueAsString(agentMapper.toDto(agentRecordInserted)))
                 .build();
         logGrpcServiceClient.createLog(logRequest);
         return agentRecordInserted.getId();
