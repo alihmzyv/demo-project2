@@ -10,19 +10,14 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface UserService {
-    long createUser(UserCreateRequestDetailedDto userCreateRequestBasicDto);
-
-    UserDetailedResponseDto findUserById(Long userId);
-
-    void requiresUsernameAndEmailIsUnique(UserCreateRequestBasicDto userCreateRequestBasicDto);
-
     List<UserDetailedResponseDto> findAllUsers(Pageable pageable);
-
-    void updateUser(UserBasicInfoUpdateDto userBasicInfoUpdateDto);
-
-    void deleteUserById(Long userId);
-
-    void updateUserPermissions(List<MenuRoleUpdateRequestDto> menuRoleUpdateRequestDtos);
-
+    UserDetailedResponseDto findUserById(Long userId);
     UserDetailedResponseDto findUserByUsername(String username);
+    UserDetailedResponseDto createUser(String username, UserCreateRequestDetailedDto userCreateRequestBasicDto);
+    void updateUserMenuPermissions(String username, List<MenuRoleUpdateRequestDto> menuRoleUpdateRequestDtos);
+
+    void updateUserDetails(String username, UserBasicInfoUpdateDto userBasicInfoUpdateDto);
+
+    void deleteUserById(String username, Long userId);
+    void requiresUsernameAndEmailIsUnique(UserCreateRequestBasicDto userCreateRequestBasicDto);
 }

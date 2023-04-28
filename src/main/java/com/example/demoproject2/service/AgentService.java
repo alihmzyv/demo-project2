@@ -13,13 +13,13 @@ public interface AgentService {
 
     AgentDetailedResponseDto findAgentById(Integer agentId);
 
-    int createAgent(String username, AgentCreateRequestDto agentCreateRequestDto);
+    AgentDetailedResponseDto createAgent(String username, AgentCreateRequestDto agentCreateRequestDto);
 
-    void deleteAgentById(Integer agentId);
+    void updateAgentStatus(String username, AgentStatusUpdateRequestDto agentStatusUpdateRequestDto);
 
-    void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto);
+    void updateAgentDetails(String username, AgentUpdateRequestDto agentUpdateRequestDto);
 
-    void updateAgent(AgentUpdateRequestDto agentUpdateRequestDto);
+    void deleteAgentById(String username, Integer agentId);
 
     void requiresAgentExistsById(Integer agentId);
 }

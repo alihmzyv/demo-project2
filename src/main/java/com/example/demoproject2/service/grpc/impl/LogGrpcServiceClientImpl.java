@@ -1,9 +1,8 @@
-package com.example.demoproject2.service.impl;
+package com.example.demoproject2.service.grpc.impl;
 
 import com.example.demoproject2.proto.CreateLogRequest;
-import com.example.demoproject2.proto.LogResponse;
 import com.example.demoproject2.proto.LogServiceGrpc;
-import com.example.demoproject2.service.LogGrpcServiceClient;
+import com.example.demoproject2.service.grpc.LogGrpcServiceClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import jakarta.annotation.PostConstruct;
@@ -31,8 +30,8 @@ public class LogGrpcServiceClientImpl implements LogGrpcServiceClient {
     }
 
     @Override
-    public LogResponse createLog(CreateLogRequest createLogRequest) {
-        return client.createLog(createLogRequest);
+    public void createLog(CreateLogRequest createLogRequest) {
+        client.createLog(createLogRequest);
     }
 }
 

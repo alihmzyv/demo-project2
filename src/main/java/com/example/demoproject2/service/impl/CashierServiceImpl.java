@@ -34,22 +34,22 @@ public class CashierServiceImpl implements CashierService {
     CashierSportsStakesLimitsMapper cashierSportsStakesLimitsMapper;
 
     @Override
-    public int createCashier(Integer agentId, CashierCreateRequestDto cashierCreateRequestDto) {
+    public CashierDetailedResponseDto createCashier(String username, Integer agentId, CashierCreateRequestDto cashierCreateRequestDto) {
         CashierRecord cashierRecord = cashierMapper.toRecord(cashierCreateRequestDto);
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierSportsStakesLimitsMapper.toRecord(cashierCreateRequestDto.getCashierSportsStakeLimitDtos());
-        CashierRecord cashierRecordInserted = cashierRepo.insertCashier(agentId, cashierRecord, stakeLimitsRecords);
-        return cashierRecordInserted.getId();
+        cashierRepo.insertCashier(agentId, cashierRecord, stakeLimitsRecords);
+        return findCashierById(cashierRecord.getId());
     }
 
     @Override
-    public void deleteCashierById(Integer cashierId) {
+    public void deleteCashierById(String username, Integer cashierId) {
         int deletedRows = cashierRepo.deleteCashierById(cashierId);
         if (deletedRows == 0)
             throw new IllegalArgumentException(String.format("Cashier not found with id: %d", cashierId));
     }
 
     @Override
-    public void updateCashierStatus(CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
+    public void updateCashierStatus(String username, CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto) {
         Integer cashierId = cashierUpdateStatusRequestDto.getCashierId();
         requiresCashierExistsById(cashierId);
         log.info(cashierUpdateStatusRequestDto.getComment()); //TODO: log to db
@@ -66,14 +66,14 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
-    public void updateCashier(CashierUpdateRequestDto cashierUpdateRequestDto) {
+    public void updateCashierDetails(String username, CashierUpdateRequestDto cashierUpdateRequestDto) {
         CashierRecord cashierRecord = cashierMapper.toRecord(cashierUpdateRequestDto);
         List<CashierSportsStakeLimitsRecord> stakeLimitsRecords = cashierSportsStakesLimitsMapper.toRecord(cashierUpdateRequestDto.getCashierSportsStakeLimits());
         cashierRepo.updateCashier(cashierRecord, stakeLimitsRecords);
     }
 
     @Override
-    public void updateBalance(CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto, BalanceType balanceType) {
+    public void updateCashierBalance(String username, CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto, BalanceType balanceType) {
         Integer cashierId = cashierUpdateBalanceRequestDto.getCashierId();
         if (!cashierRepo.cashierExistsById(cashierId)) {
             throw new IllegalArgumentException(String.format("Cashier not found with id=%d", cashierId));

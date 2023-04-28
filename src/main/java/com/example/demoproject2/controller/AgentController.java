@@ -36,8 +36,7 @@ public class AgentController {
     public AgentDetailedResponseDto createAgent(
             @RequestBody @Valid AgentCreateRequestDto agentCreateRequestDto,
             @RequestHeader("Authorization") String username) {
-        int insertedAgentId = agentService.createAgent(username, agentCreateRequestDto);
-        return agentService.findAgentById(insertedAgentId);
+        return agentService.createAgent(username, agentCreateRequestDto);
     }
 
     @SneakyThrows
@@ -55,29 +54,32 @@ public class AgentController {
 
     @PutMapping
     public AgentDetailedResponseDto updateAgent(
-            @RequestBody @Valid AgentUpdateRequestDto agentUpdateRequestDto) {
-        agentService.updateAgent(agentUpdateRequestDto);
+            @RequestBody @Valid AgentUpdateRequestDto agentUpdateRequestDto,
+            @RequestHeader("Authorization") String username) {
+        agentService.updateAgentDetails(username, agentUpdateRequestDto);
         return agentService.findAgentById(agentUpdateRequestDto.getId());
     }
 
     @PatchMapping("/update-status")
     public void updateAgentStatus(
-            @RequestBody @Valid AgentStatusUpdateRequestDto agentStatusUpdateRequestDto) {
-        agentService.updateAgentStatus(agentStatusUpdateRequestDto);
+            @RequestBody @Valid AgentStatusUpdateRequestDto agentStatusUpdateRequestDto,
+            @RequestHeader("Authorization") String username) {
+        agentService.updateAgentStatus(username, agentStatusUpdateRequestDto);
     }
 
     @DeleteMapping("/{agent-id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteAgent(
-            @PathVariable("agent-id") Integer agentId) {
-        agentService.deleteAgentById(agentId);
+            @PathVariable("agent-id") Integer agentId,
+            @RequestHeader("Authorization") String username) {
+        agentService.deleteAgentById(username, agentId);
     }
 
     @PostMapping("/{agent-id}")
     public CashierDetailedResponseDto createCashier(
             @PathVariable("agent-id") Integer agentId,
-            @RequestBody @Valid CashierCreateRequestDto cashierCreateRequestDto) {
-        int insertedCashierId = cashierService.createCashier(agentId, cashierCreateRequestDto);
-        return cashierService.findCashierById(insertedCashierId);
+            @RequestBody @Valid CashierCreateRequestDto cashierCreateRequestDto,
+            @RequestHeader("Authorization") String username) {
+        return cashierService.createCashier(username, agentId, cashierCreateRequestDto);
     }
 }

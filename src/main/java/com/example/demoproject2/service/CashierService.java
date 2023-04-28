@@ -8,17 +8,12 @@ import com.example.demoproject2.model.dto.cashier.req.CashierUpdateStatusRequest
 import com.example.demoproject2.model.dto.cashier.resp.CashierDetailedResponseDto;
 
 public interface CashierService {
-    int createCashier(Integer agentId, CashierCreateRequestDto cashierCreateRequestDto);
-
-    void deleteCashierById(Integer cashierId);
-
-    void updateCashierStatus(CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto);
-
     CashierDetailedResponseDto findCashierById(int cashierId);
 
-    void updateCashier(CashierUpdateRequestDto cashierUpdateRequestDto);
-
-    void updateBalance(CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto, BalanceType balanceType);
-
+    CashierDetailedResponseDto createCashier(String username, Integer agentId, CashierCreateRequestDto cashierCreateRequestDto);
+    void updateCashierStatus(String username, CashierUpdateStatusRequestDto cashierUpdateStatusRequestDto);
+    void updateCashierDetails(String username, CashierUpdateRequestDto cashierUpdateRequestDto);
+    void updateCashierBalance(String username, CashierUpdateBalanceRequestDto cashierUpdateBalanceRequestDto, BalanceType balanceType);
+    void deleteCashierById(String username, Integer cashierId);
     void requiresCashierExistsById(Integer cashierId);
 }

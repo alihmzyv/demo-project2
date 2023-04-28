@@ -30,11 +30,12 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
 
     @Override
-    public long createUser(UserCreateRequestDetailedDto userCreateRequestDetailedDto) {
+    public UserDetailedResponseDto createUser(String username, UserCreateRequestDetailedDto userCreateRequestDetailedDto) {
         requiresUsernameAndEmailIsUnique(userCreateRequestDetailedDto.getUserCreateRequestBasicDto());
         UsersRecord usersRecord = userMapper.toRecord(userCreateRequestDetailedDto.getUserCreateRequestBasicDto());
         List<UserMenuRecord> userMenuRecords = userMapper.toUserMenuRecords(userCreateRequestDetailedDto.getMenuRoleDtos());
-        return userRepo.insertUser(usersRecord, userMenuRecords);
+        userRepo.insertUser(usersRecord, userMenuRecords);
+        return findUserById(usersRecord.getId());
     }
 
     @Override
@@ -65,13 +66,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(UserBasicInfoUpdateDto userBasicInfoUpdateDto) {
+    public void updateUserDetails(String username, UserBasicInfoUpdateDto userBasicInfoUpdateDto) {
         UsersRecord usersRecord = userMapper.toDto(userBasicInfoUpdateDto);
         userRepo.updateUser(usersRecord);
     }
 
     @Override
-    public void deleteUserById(Long userId) {
+    public void deleteUserById(String username, Long userId) {
         int deletedUsers = userRepo.deleteUserById(userId);
         if (deletedUsers == 0) {
             throw new IllegalArgumentException(String.format("User not found with id=%d", userId));
@@ -79,7 +80,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserPermissions(List<MenuRoleUpdateRequestDto> menuRoleUpdateRequestDtos) {
+    public void updateUserMenuPermissions(String username, List<MenuRoleUpdateRequestDto> menuRoleUpdateRequestDtos) {
         List<UserMenuRecord> userMenuRecords = userMapper.toRecord(menuRoleUpdateRequestDtos);
         userRepo.updateUser(userMenuRecords);
     }

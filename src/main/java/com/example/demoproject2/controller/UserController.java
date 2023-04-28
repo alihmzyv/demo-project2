@@ -37,24 +37,29 @@ public class UserController {
 
     @PostMapping
     public UserDetailedResponseDto createUser(
-            @RequestBody @Valid UserCreateRequestDetailedDto userCreateRequestDetailedDto) {
-        long insertedUserId = userService.createUser(userCreateRequestDetailedDto);
-        return userService.findUserById(insertedUserId);
+            @RequestBody @Valid UserCreateRequestDetailedDto userCreateRequestDetailedDto,
+            @RequestHeader("Authorization") String username) {
+        return userService.createUser(username, userCreateRequestDetailedDto);
     }
 
     @PutMapping
-    public void updateUser(@RequestBody @Valid UserBasicInfoUpdateDto userBasicInfoUpdateDto) {
-        userService.updateUser(userBasicInfoUpdateDto);
+    public void updateUser(
+            @RequestBody @Valid UserBasicInfoUpdateDto userBasicInfoUpdateDto,
+            @RequestHeader("Authorization") String username) {
+        userService.updateUserDetails(username, userBasicInfoUpdateDto);
     }
 
     @PatchMapping("/update-permissions")
     public void updateUserPermissions(
-            @RequestBody @Valid List<MenuRoleUpdateRequestDto> menuRoleUpdateRequestDtos) {
-        userService.updateUserPermissions(menuRoleUpdateRequestDtos);
+            @RequestBody @Valid List<MenuRoleUpdateRequestDto> menuRoleUpdateRequestDtos,
+            @RequestHeader("Authorization") String username) {
+        userService.updateUserMenuPermissions(username, menuRoleUpdateRequestDtos);
     }
 
     @DeleteMapping("/{user-id}")
-    public void deleteUserById(@PathVariable("user-id") Long userId) {
-        userService.deleteUserById(userId);
+    public void deleteUserById(
+            @PathVariable("user-id") Long userId,
+            @RequestHeader("Authorization") String username) {
+        userService.deleteUserById(username, userId);
     }
 }

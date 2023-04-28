@@ -6,12 +6,8 @@ import com.example.demoproject2.model.dto.agent.req.AgentStatusUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.req.AgentUpdateRequestDto;
 import com.example.demoproject2.model.dto.agent.resp.AgentDetailedResponseDto;
 import com.example.demoproject2.model.mapper.AgentMapper;
-import com.example.demoproject2.proto.CreateLogRequest;
 import com.example.demoproject2.repo.AgentRepo;
 import com.example.demoproject2.service.AgentService;
-import com.example.demoproject2.service.LogGrpcServiceClient;
-import com.example.demoproject2.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -24,9 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demoproject2.consts.OperationService.AGENT_SERVICE;
-import static com.example.demoproject2.consts.OperationType.CREATE;
-
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Slf4j
@@ -34,9 +27,6 @@ import static com.example.demoproject2.consts.OperationType.CREATE;
 public class AgentServiceImpl implements AgentService {
     AgentMapper agentMapper;
     AgentRepo agentRepo;
-    LogGrpcServiceClient logGrpcServiceClient;
-    ObjectMapper objectMapper;
-    UserService userService;
 
     @Override
     public List<AgentDetailedResponseDto> findAllAgents(Pageable pageable) {
@@ -54,27 +44,20 @@ public class AgentServiceImpl implements AgentService {
 
     @SneakyThrows
     @Override
-    public int createAgent(String username, AgentCreateRequestDto agentCreateRequestDto) {
+    public AgentDetailedResponseDto createAgent(String username, AgentCreateRequestDto agentCreateRequestDto) {
         AgentRecord agentRecord = agentMapper.toRecord(agentCreateRequestDto);
         AgentRecord agentRecordInserted = agentRepo.insertAgent(agentRecord);
-        CreateLogRequest logRequest = CreateLogRequest.newBuilder()
-                .setUsername(username)
-                .setOperationService(AGENT_SERVICE.ordinal())
-                .setOperationType(CREATE.ordinal())
-                .setJson(objectMapper.writeValueAsString(agentMapper.toDto(agentRecordInserted)))
-                .build();
-        logGrpcServiceClient.createLog(logRequest);
-        return agentRecordInserted.getId();
+        return findAgentById(agentRecordInserted.getId());
     }
 
     @Override
-    public void deleteAgentById(Integer agentId) {
+    public void deleteAgentById(String username, Integer agentId) {
         int deletedRows = agentRepo.deleteAgentById(agentId);
         if (deletedRows == 0) throw new IllegalArgumentException(String.format("Agent not found with id: %d", agentId));
     }
 
     @Override
-    public void updateAgentStatus(AgentStatusUpdateRequestDto agentStatusUpdateRequestDto) {
+    public void updateAgentStatus(String username, AgentStatusUpdateRequestDto agentStatusUpdateRequestDto) {
         log.info(agentStatusUpdateRequestDto.getComment()); //log to db TODO
         Integer agentId = agentStatusUpdateRequestDto.getId();
         requiresAgentExistsById(agentId);
@@ -83,7 +66,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public void updateAgent(AgentUpdateRequestDto agentUpdateRequestDto) {
+    public void updateAgentDetails(String username, AgentUpdateRequestDto agentUpdateRequestDto) {
         requiresAgentExistsById(agentUpdateRequestDto.getId());
         AgentRecord agentRecord = agentMapper.toRecord(agentUpdateRequestDto);
         agentRepo.updateAgent(agentRecord);
