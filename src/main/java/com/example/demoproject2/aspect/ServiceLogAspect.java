@@ -2,6 +2,8 @@ package com.example.demoproject2.aspect;
 
 import com.example.demoproject2.consts.OperationService;
 import com.example.demoproject2.consts.OperationType;
+import com.example.demoproject2.kafka.producer.KafkaProducerService;
+import com.example.demoproject2.model.dto.log.CreateLogRequestKafkaDto;
 import com.example.demoproject2.model.dto.log.LogJsonDto;
 import com.example.demoproject2.proto.CreateLogRequest;
 import com.example.demoproject2.service.grpc.LogGrpcServiceClient;
@@ -17,6 +19,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+
 import static com.example.demoproject2.consts.OperationType.*;
 
 @Slf4j
@@ -27,6 +31,7 @@ import static com.example.demoproject2.consts.OperationType.*;
 public class ServiceLogAspect {
     ObjectMapper objectMapper;
     LogGrpcServiceClient logGrpcServiceClient;
+    KafkaProducerService kafkaProducerService;
 
     @Pointcut("execution(public * com.example.demoproject2.service.impl.*.create*(..))")
     private void forCreate() {}
@@ -40,33 +45,38 @@ public class ServiceLogAspect {
     @SneakyThrows
     @AfterReturning(pointcut = "forCreate()", returning = "result")
     public void afterCreateAdvice(JoinPoint joinPoint, Object result) {
-        CreateLogRequest logRequest = createLogRequest(joinPoint, result, CREATE);
+        CreateLogRequestKafkaDto logRequestKafka = createLogRequestKafka(joinPoint, result, UPDATE);
+        kafkaProducerService.createLog(logRequestKafka);
+        CreateLogRequest logRequest = createLogRequestGrpc(joinPoint, result, CREATE);
         logGrpcServiceClient.createLog(logRequest);
     }
 
     @SneakyThrows
     @AfterReturning(pointcut = "forUpdate()", returning = "result")
     public void afterUpdateAdvice(JoinPoint joinPoint, Object result) {
-        CreateLogRequest logRequest = createLogRequest(joinPoint, result, UPDATE);
+        CreateLogRequestKafkaDto logRequestKafka = createLogRequestKafka(joinPoint, result, UPDATE);
+        kafkaProducerService.createLog(logRequestKafka);
+        CreateLogRequest logRequest = createLogRequestGrpc(joinPoint, result, UPDATE);
         logGrpcServiceClient.createLog(logRequest);
     }
 
     @SneakyThrows
     @AfterReturning(pointcut = "forDelete()", returning = "result")
     public void afterDeleteAdvice(JoinPoint joinPoint, Object result) {
-        CreateLogRequest logRequest = createLogRequest(joinPoint, result, DELETE);
+        CreateLogRequestKafkaDto logRequestKafka = createLogRequestKafka(joinPoint, result, UPDATE);
+        kafkaProducerService.createLog(logRequestKafka);
+        CreateLogRequest logRequest = createLogRequestGrpc(joinPoint, result, DELETE);
         logGrpcServiceClient.createLog(logRequest);
     }
 
     @SneakyThrows
-    private CreateLogRequest createLogRequest(JoinPoint joinPoint, Object result, OperationType operationType) {
+    private CreateLogRequest createLogRequestGrpc(JoinPoint joinPoint, Object result, OperationType operationType) {
         Object[] args = joinPoint.getArgs();
         LogJsonDto logJson = LogJsonDto.builder()
                 .args(args)
                 .result(result)
                 .build();
         String simpleClassName = joinPoint.getTarget().getClass().getSimpleName();
-        log.info("simple class name: {}", simpleClassName);
         int operation_service = OperationService.findByClassName(simpleClassName)
                 .map(Enum::ordinal)
                 .orElseThrow(() -> new IllegalArgumentException("Operation service not found")); //not possible
@@ -76,6 +86,27 @@ public class ServiceLogAspect {
                 .setOperationService(operation_service)
                 .setOperationType(operationType.ordinal())
                 .setJson(objectMapper.writeValueAsString(logJson))
+                .build();
+    }
+
+    @SneakyThrows
+    private CreateLogRequestKafkaDto createLogRequestKafka(JoinPoint joinPoint, Object result, OperationType operationType) {
+        Object[] args = joinPoint.getArgs();
+        LogJsonDto logJson = LogJsonDto.builder()
+                .args(args)
+                .result(result)
+                .build();
+        String simpleClassName = joinPoint.getTarget().getClass().getSimpleName();
+        int operationService = OperationService.findByClassName(simpleClassName)
+                .map(Enum::ordinal)
+                .orElseThrow(() -> new IllegalArgumentException("Operation service not found")); //not possible
+        String username = (String) args[0];
+        return CreateLogRequestKafkaDto.builder()
+                .createdAt(Instant.now().toEpochMilli())
+                .username(username)
+                .operationService((short) operationService)
+                .operationType((short) operationType.ordinal())
+                .json(objectMapper.writeValueAsString(logJson))
                 .build();
     }
 }

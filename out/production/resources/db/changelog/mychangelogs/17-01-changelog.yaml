@@ -1,0 +1,567 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1681728910254-1
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: agent_pk
+                  name: id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: agent_code
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: full_name
+                  type: VARCHAR
+              - column:
+                  name: id_number
+                  type: VARCHAR
+              - column:
+                  constraints:
+                    nullable: false
+                  name: voen
+                  type: VARCHAR
+              - column:
+                  name: phone
+                  type: VARCHAR(15)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: mobile
+                  type: VARCHAR(15)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: city_id
+                  type: INTEGER
+              - column:
+                  name: address
+                  type: VARCHAR
+              - column:
+                  defaultValueNumeric: !!float '0'
+                  name: total_permanent_balance
+                  type: numeric(19, 2)
+              - column:
+                  defaultValueNumeric: !!float '0'
+                  name: debt_credit
+                  type: numeric(19, 2)
+              - column:
+                  defaultValueNumeric: !!float '0'
+                  name: extra_debt_credit
+                  type: numeric(19, 2)
+              - column:
+                  defaultValueNumeric: !!float '2'
+                  name: status
+                  type: SMALLINT
+              - column:
+                  name: email
+                  type: VARCHAR
+              - column:
+                  name: sales_rep_email
+                  type: VARCHAR
+            tableName: agent
+  - changeSet:
+      id: 1681728910254-2
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: cashier_pk
+                  name: id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: cashier_code
+                  type: INTEGER
+              - column:
+                  defaultValue: 0000111-198
+                  name: provider_id
+                  type: VARCHAR
+              - column:
+                  constraints:
+                    nullable: false
+                  name: full_name
+                  type: VARCHAR
+              - column:
+                  name: phone
+                  type: VARCHAR(15)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: mobile
+                  type: VARCHAR(15)
+              - column:
+                  name: zone_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: city_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: region_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: address
+                  type: VARCHAR
+              - column:
+                  name: mac_address
+                  type: VARCHAR
+              - column:
+                  defaultValueNumeric: !!float '5000'
+                  name: next_permanent_balance
+                  type: numeric(19, 2)
+              - column:
+                  defaultValueNumeric: !!float '5000'
+                  name: current_balance
+                  type: numeric(19, 2)
+              - column:
+                  defaultValueNumeric: !!float '0'
+                  name: extra_debt_credit
+                  type: numeric(19, 2)
+              - column:
+                  defaultValueNumeric: !!float '0'
+                  name: debt_credit
+                  type: numeric(19, 2)
+              - column:
+                  defaultValueNumeric: !!float '3000'
+                  name: bet_ticket_payout_limit
+                  type: numeric(19, 2)
+              - column:
+                  defaultValueNumeric: !!float '2'
+                  name: status
+                  type: SMALLINT
+              - column:
+                  defaultValueNumeric: !!float '1'
+                  name: frozen_status
+                  type: SMALLINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: agent_id
+                  type: INTEGER
+              - column:
+                  name: email
+                  type: VARCHAR
+              - column:
+                  name: sales_rep_email
+                  type: VARCHAR
+            tableName: cashier
+  - changeSet:
+      id: 1681728910254-3
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: cashier_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: sports_id
+                  type: SMALLINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: min_stake
+                  type: numeric(19, 2)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: max_stake
+                  type: numeric(19, 2)
+            tableName: cashier_sports_stake_limits
+  - changeSet:
+      id: 1681728910254-4
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: city_pk
+                  name: id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR
+            tableName: city
+  - changeSet:
+      id: 1681728910254-5
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: region_pk
+                  name: id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR
+            tableName: region
+  - changeSet:
+      id: 1681728910254-6
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: sport_pk
+                  name: id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR
+            tableName: sports
+  - changeSet:
+      id: 1681728910254-7
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: zone_pk
+                  name: id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR
+            tableName: zone
+  - changeSet:
+      id: 1681728910254-8
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: agent_code
+            indexName: agent_agent_code_uindex
+            tableName: agent
+            unique: true
+  - changeSet:
+      id: 1681728910254-9
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: email
+            indexName: agent_email_uindex
+            tableName: agent
+            unique: true
+  - changeSet:
+      id: 1681728910254-10
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: id_number
+            indexName: agent_id_number_uindex
+            tableName: agent
+            unique: true
+  - changeSet:
+      id: 1681728910254-11
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: mobile
+            indexName: agent_mobile_uindex
+            tableName: agent
+            unique: true
+  - changeSet:
+      id: 1681728910254-12
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: phone
+            indexName: agent_phone_uindex
+            tableName: agent
+            unique: true
+  - changeSet:
+      id: 1681728910254-13
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: sales_rep_email
+            indexName: agent_sales_rep_email_uindex
+            tableName: agent
+            unique: true
+  - changeSet:
+      id: 1681728910254-14
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: voen
+            indexName: agent_voen_uindex
+            tableName: agent
+            unique: true
+  - changeSet:
+      id: 1681728910254-15
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: sales_rep_email
+            indexName: cashier_alerts_email_uindex
+            tableName: cashier
+            unique: true
+  - changeSet:
+      id: 1681728910254-16
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: cashier_code
+            indexName: cashier_cashier_code_uindex
+            tableName: cashier
+            unique: true
+  - changeSet:
+      id: 1681728910254-17
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: email
+            indexName: cashier_email_uindex
+            tableName: cashier
+            unique: true
+  - changeSet:
+      id: 1681728910254-18
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: mobile
+            indexName: cashier_mobile_uindex
+            tableName: cashier
+            unique: true
+  - changeSet:
+      id: 1681728910254-19
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: phone
+            indexName: cashier_phone_uindex
+            tableName: cashier
+            unique: true
+  - changeSet:
+      id: 1681728910254-20
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: city_name_uindex
+            tableName: city
+            unique: true
+  - changeSet:
+      id: 1681728910254-21
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: region_name_uindex
+            tableName: region
+            unique: true
+  - changeSet:
+      id: 1681728910254-22
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: sport_name_uindex
+            tableName: sports
+            unique: true
+  - changeSet:
+      id: 1681728910254-23
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: zone_name_uindex
+            tableName: zone
+            unique: true
+  - changeSet:
+      id: 1681728910254-24
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: city_id
+            baseTableName: agent
+            constraintName: agent_city_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: city
+  - changeSet:
+      id: 1681728910254-25
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: agent_id
+            baseTableName: cashier
+            constraintName: cashier_agent_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: agent
+  - changeSet:
+      id: 1681728910254-26
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: city_id
+            baseTableName: cashier
+            constraintName: cashier_city_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: city
+  - changeSet:
+      id: 1681728910254-27
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: region_id
+            baseTableName: cashier
+            constraintName: cashier_region_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: region
+  - changeSet:
+      id: 1681728910254-28
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: cashier_id
+            baseTableName: cashier_sports_stake_limits
+            constraintName: cashier_sports_stake_limits_cashier_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: cashier
+  - changeSet:
+      id: 1681728910254-29
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: sports_id
+            baseTableName: cashier_sports_stake_limits
+            constraintName: cashier_sports_stake_limits_sports_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: sports
+  - changeSet:
+      id: 1681728910254-30
+      author: Ali (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: zone_id
+            baseTableName: cashier
+            constraintName: cashier_zone_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: id
+            referencedTableName: zone
+
